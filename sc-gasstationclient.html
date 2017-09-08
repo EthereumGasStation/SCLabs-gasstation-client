@@ -85,7 +85,7 @@
     text-align: center;
   }
   .container {
-    margin-top: 50px;
+    margin-top: 20px;
     @apply --layout-vertical;
     @apply --layout-center-center;
   }
@@ -199,6 +199,7 @@
       <!-- page 1 -->
       <div>
         <p>How many deals would you like to do?</p>
+        <p>&nbsp;</p>
         <div>
           <iron-selector
           id="selector"
@@ -224,7 +225,7 @@
         <p>This offer is personal and limited to the next 5 blocks.</p>
         <p>&nbsp;</p>
         <div class="balances">
-          <div class="balance_single"><div class="balance">[[numberofdeals]]</div><div>DEALS</div></div>
+          <div class="balance_single"><div class="balance">[[nrofdeals]]</div><div>DEALS</div></div>
           <div class="spacer">=</div>
           <div class="balance_single"><div class="balance">[[swtamount]]</div><div>{{short}}</div></div>
         </div>
@@ -994,6 +995,7 @@
 
       doSomething() {
         console.log('something was selected, ', this.selecteditem);
+        this.nrofdeals = this.selecteditem.innerHTML;
       }
 
       _close() {
@@ -1039,7 +1041,8 @@
         // animation to open up the balances view and check the current balance.
         setTimeout(function() {
           //your code to be executed after 1 second
-          self.$.balancesview.hidden = false;
+          var hidden = document.getElementById("balancesview");
+          hidden.hidden = false;
         }, 1000);
       }
 
@@ -1048,7 +1051,7 @@
         this.selectedpage = 3;
         var audio = new Audio('../images/done.m4a');
         this.swtamount = 1.00;
-        var amounttoget = 0.5;
+        var amounttoget = 1;
 
         var self = this;
         var now = 0;
@@ -1060,7 +1063,7 @@
 
           // If the count down is finished, write some text
           if (now >= amounttoget) {
-            audio.play();
+            //audio.play();
             clearInterval(x);
             self.showbalances();
           }
