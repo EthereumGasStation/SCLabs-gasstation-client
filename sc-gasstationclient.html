@@ -1,0 +1,36 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="sc-gasstationclient">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * `sc-gasstationclient`
+     * 
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class ScGasstationclient extends Polymer.Element {
+      static get is() { return 'sc-gasstationclient'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'sc-gasstationclient'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(ScGasstationclient.is, ScGasstationclient);
+  </script>
+</dom-module>
