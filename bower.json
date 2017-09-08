@@ -2,7 +2,12 @@
   "name": "sc-gasstationclient",
   "main": "sc-gasstationclient.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0"
+    "polymer": "Polymer/polymer#^2.0.0",
+    "web3": "^0.19.0",
+    "iron-pages": "^2.0.0",
+    "iron-selector": "^2.0.0",
+    "browser-builds": "https://github.com/ethereumjs/browser-builds.git",
+    "paper-input": "^2.0.2"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
