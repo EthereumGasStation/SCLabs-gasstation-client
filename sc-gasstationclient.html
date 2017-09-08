@@ -1,3 +1,4 @@
+<link rel="import" href="../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 
 <script src="utility.js"></script>
@@ -15,15 +16,19 @@
   <style include="shared-styles">
   :host {
     display: block;
-    @apply --layout-horizontal;
-    @apply --layout-center-justified;
     background-color: var(--sc-grey1);
+    padding: 40px;
   }
   .balances {
     @apply --layout-horizontal;
     @apply --layout-center-justified;
     @apply(--layout-center);
     margin-bottom: 40px;
+  }
+  .header {
+    width: 100%;
+    @apply --layout-vertical;
+    @apply --layout-end;
   }
   .vertical {
     @apply --layout-vertical;
@@ -43,8 +48,12 @@
     min-height: 120px;
   }
   .address {
+    text-align: center;
     font-weight: bold;
-    text-overflow: ellipsis; overflow: hidden; width: 300px; height: 1.2em; white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    height: 1.2em;
+    white-space: nowrap;
   }
   .spacer {
     width: 30px;
@@ -53,9 +62,6 @@
     font-size: 26px;
   }
   .close {
-    position: fixed;
-    top: 18px;
-    right: 18px;
     width: 20px;
     height: 20px;
     background: url('./images/swarm-city-sprite.png') -60px -84px;
@@ -80,7 +86,8 @@
   }
   .container {
     margin-top: 50px;
-    max-width: 300px;
+    @apply --layout-vertical;
+    @apply --layout-center-center;
   }
   h1 {
     @apply --body-default-wide;
@@ -163,7 +170,9 @@
   </style>
   <template is="dom-if" if="{{gasstationready}}">
 
-  <div class="close" on-click="_close"></div>
+  <div class="header">
+    <div class="close" on-click="_close"></div>
+  </div>
   <div class="container">
     <div class="vertical">
       <div class="big">
@@ -184,7 +193,7 @@
           <div class="spacer"></div>
           <div class="balance_single"><div class="balance">[[tokenbalance]]</div><div>{{short}}</div></div>
         </div>
-        <div class="btn" on-tap="toStation">Get more gas</div>
+        <div class="btn" on-click="toStation">Get more gas</div>
       </div>
 
       <!-- page 1 -->
@@ -202,7 +211,7 @@
           <div class="gasbtn" name="50">50</div>
         </iron-selector>
       </div>
-      <div class="btn" on-tap="toPersonalizedoffer">Continue ></div>
+      <div class="btn" on-click="toPersonalizedoffer">Continue ></div>
 
       <!-- <h1>Our best offer:</h1>
       <div><pre>[[getPriceResult_pre]]</pre></div> -->
@@ -223,7 +232,7 @@
       </div>
       <p>&nbsp;</p>
 
-      <div class="btn" on-tap="fillUp">Start filling</div>
+      <div class="btn" on-click="fillUp">Start filling</div>
 
     </div>
 
@@ -239,7 +248,7 @@
           <div class="spacer"></div>
           <div class="balance_single"><div class="balance">[[tokenbalance]]</div><div>{{short}}</div></div>
         </div>
-        <div class="btn" on-tap="toEnd">Continue</div>
+        <div class="btn" on-click="toEnd">Continue</div>
       </div>
     </div>
 
@@ -250,7 +259,7 @@
       <p>&nbsp;</p>
       <input type="checkbox" name="autofill" value=""> Automatically fill up my gas tank
       <p>&nbsp;</p>
-      <div class="btn" on-tap="exitStation">Exit Gas Station</div>
+      <div class="btn" on-click="exitStation">Exit Gas Station</div>
     </div>
   </iron-pages>
 </div>
@@ -268,7 +277,7 @@
       <p><b>Could not find a valid wallet.</b></p>
       <p>Gas Station could not find a valid wallet. Follow the instructions to set up your wallet to see this amazing component in action.</p>
       <p>&nbsp;</p>
-      <div class="btn" on-tap="">Retry</div>
+      <div class="btn" on-click="">Retry</div>
 
     </div>
   </div>
@@ -967,6 +976,7 @@
       }
 
       toStation() {
+        console.log('to station');
         this.selectedpage = 1;
       }
 
@@ -986,13 +996,17 @@
         console.log('something was selected, ', this.selecteditem);
       }
 
+      _close() {
+        alert('In Swarm City, this close icon would take you back');
+      }
+
       getPrice() {
         //debugger;
         return new Promise((resolve, reject) => {
           // Load the translations.json file
           const xobj = new XMLHttpRequest();
           xobj.overrideMimeType('application/json');
-          xobj.open('GET', './price?from=' + this.address+'&tokenaddress=' + this.erc20, true);
+          xobj.open('GET', 'https://shrouded-sea-21642.herokuapp.com/price?from=' + this.address+'&tokenaddress=' + this.erc20, true);
           xobj.onreadystatechange = () => {
             if (xobj.readyState == 4 && xobj.status == '200') {
               // Parse the response
@@ -1027,14 +1041,12 @@
           //your code to be executed after 1 second
           self.$.balancesview.hidden = false;
         }, 1000);
-
-
       }
 
       fillUp() {
 
         this.selectedpage = 3;
-        var audio = new Audio('/gs-client/images/done.m4a');
+        var audio = new Audio('../images/done.m4a');
         this.swtamount = 1.00;
         var amounttoget = 0.5;
 
@@ -1193,7 +1205,7 @@
 
         this.privatekey_buffer = new EthJS.Buffer.Buffer(this.privatekey, "hex");
 
-        this.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8546/"));
+        this.web3 = new Web3(new Web3.providers.HttpProvider("https://ethpool.swarm.city"));
 
         var minime = this.web3.eth.contract(this.minimetoken.abi);
         var minimeInstance = minime.at(this.erc20);
