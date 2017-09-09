@@ -170,100 +170,100 @@
   </style>
   <template is="dom-if" if="{{gasstationready}}">
 
-  <div class="header">
-    <div class="close" on-click="_close"></div>
-  </div>
-  <div class="container">
-    <div class="vertical">
-      <div class="big">
-        <img src="../images/gasstation.png" />
-      </div>
-      <h1>Gas Station</h1>
+    <div class="header">
+      <div class="close" on-click="_close"></div>
     </div>
-    <iron-pages selected="{{selectedpage}}">
-      <!-- page 0 -->
-      <div>
-        <div>{{project}} is built on top of the Ethereum blockchain. For every transaction, a small fee called "gas" is paid to the miners who make sure the blockchain is running perfectly. Gas makes Swarm City transactions go.</div>
-        <div>&nbsp;</div>
-        <div>Balances for current address: </div>
-        <div class="address">[[address]]</div>
-        <p>&nbsp;</p>
-        <div class="balances">
-          <div class="balance_single"><div class="balance">[[ethbalance]]</div><div>ETH</div></div>
-          <div class="spacer"></div>
-          <div class="balance_single"><div class="balance">[[tokenbalance]]</div><div>{{short}}</div></div>
+    <div class="container">
+      <div class="vertical">
+        <div class="big">
+          <img src="../images/gasstation.png" />
         </div>
-        <div class="btn" on-click="toStation">Get more gas</div>
+        <h1>Gas Station</h1>
       </div>
-
-      <!-- page 1 -->
-      <div>
-        <p>How many deals would you like to do?</p>
-        <p>&nbsp;</p>
+      <iron-pages selected="{{selectedpage}}">
+        <!-- page 0 -->
         <div>
-          <iron-selector
-          id="selector"
-          attr-for-selected="name"
-          on-iron-select="doSomething"
-          selected-item="{{selecteditem}}">
-          <div class="gasbtn" name="1">1</div>
-          <div class="gasbtn" name="10">10</div>
-          <div class="gasbtn" name="20">20</div>
-          <div class="gasbtn" name="50">50</div>
-        </iron-selector>
+          <div>{{project}} is built on top of the Ethereum blockchain. For every transaction, a small fee called "gas" is paid to the miners who make sure the blockchain is running perfectly. Gas makes Swarm City transactions go.</div>
+          <div>&nbsp;</div>
+          <div>Balances for current address: </div>
+          <div class="address">[[address]]</div>
+          <p>&nbsp;</p>
+          <div class="balances">
+            <div class="balance_single"><div class="balance">[[ethbalance]]</div><div>ETH</div></div>
+            <div class="spacer"></div>
+            <div class="balance_single"><div class="balance">[[tokenbalance]]</div><div>{{short}}</div></div>
+          </div>
+          <div class="btn" on-click="toStation">Get more gas</div>
+        </div>
+
+        <!-- page 1 -->
+        <div>
+          <p>How many deals would you like to do?</p>
+          <p>&nbsp;</p>
+          <div>
+            <iron-selector
+            id="selector"
+            attr-for-selected="name"
+            on-iron-select="doSomething"
+            selected-item="{{selecteditem}}">
+              <div class="gasbtn" name="1">1</div>
+              <div class="gasbtn" name="10">10</div>
+              <div class="gasbtn" name="20">20</div>
+              <div class="gasbtn" name="50">50</div>
+            </iron-selector>
+          </div>
+        <div class="btn" on-click="toPersonalizedoffer">Continue ></div>
+
+        <!-- <h1>Our best offer:</h1>
+        <div><pre>[[getPriceResult_pre]]</pre></div> -->
+        <!-- <div on-tap="fillUp"><b>Fill her up</b></div> -->
       </div>
-      <div class="btn" on-click="toPersonalizedoffer">Continue ></div>
 
-      <!-- <h1>Our best offer:</h1>
-      <div><pre>[[getPriceResult_pre]]</pre></div> -->
-      <!-- <div on-tap="fillUp"><b>Fill her up</b></div> -->
-    </div>
-
-    <!-- page personalizedoffer -->
-    <div>
+      <!-- page personalizedoffer -->
       <div>
-        <p>This offer is personal and limited to the next 5 blocks.</p>
+        <div>
+          <p>This offer is personal and limited to the next 5 blocks.</p>
+          <p>&nbsp;</p>
+          <div class="balances">
+            <div class="balance_single"><div class="balance">[[nrofdeals]]</div><div>DEALS</div></div>
+            <div class="spacer">=</div>
+            <div class="balance_single"><div class="balance">[[swtamount]]</div><div>{{short}}</div></div>
+          </div>
+
+        </div>
         <p>&nbsp;</p>
-        <div class="balances">
-          <div class="balance_single"><div class="balance">[[nrofdeals]]</div><div>DEALS</div></div>
-          <div class="spacer">=</div>
-          <div class="balance_single"><div class="balance">[[swtamount]]</div><div>{{short}}</div></div>
-        </div>
+
+        <div class="btn" on-click="fillUp">Start filling</div>
 
       </div>
-      <p>&nbsp;</p>
 
-      <div class="btn" on-click="fillUp">Start filling</div>
-
-    </div>
-
-    <!-- page 3 -->
-    <div>
-      <p>Filling now</p>
-      <h1>{{fillingbalance}} / {{swtamount}} SWT</h1>
-      <div><pre>[[fillUpResult_pre]]</pre></div>
-      <p>&nbsp;</p>
-      <div id="balancesview">
-        <div class="balances">
-          <div class="balance_single"><div class="balance">[[ethbalance]]</div><div>ETH</div></div>
-          <div class="spacer"></div>
-          <div class="balance_single"><div class="balance">[[tokenbalance]]</div><div>{{short}}</div></div>
+      <!-- page 3 -->
+      <div>
+        <p>Filling now</p>
+        <h1>{{fillingbalance}} / {{swtamount}} SWT</h1>
+        <div><pre>[[fillUpResult_pre]]</pre></div>
+        <p>&nbsp;</p>
+        <div id="balancesview" hidden>
+          <div class="balances">
+            <div class="balance_single"><div class="balance">[[ethbalance]]</div><div>ETH</div></div>
+            <div class="spacer"></div>
+            <div class="balance_single"><div class="balance">[[tokenbalance]]</div><div>{{short}}</div></div>
+          </div>
+          <div class="btn" on-click="toEnd">Continue</div>
         </div>
-        <div class="btn" on-click="toEnd">Continue</div>
       </div>
-    </div>
 
-    <!-- page 4 -->
-    <div>
-      <h1>Set up automatic refills</h1>
-      <p>If you want, your gas balance can be automatically refilled when needed.</p>
-      <p>&nbsp;</p>
-      <input type="checkbox" name="autofill" value=""> Automatically fill up my gas tank
-      <p>&nbsp;</p>
-      <div class="btn" on-click="exitStation">Exit Gas Station</div>
-    </div>
-  </iron-pages>
-</div>
+      <!-- page 4 -->
+      <div>
+        <h1>Set up automatic refills</h1>
+        <p>If you want, your gas balance can be automatically refilled when needed.</p>
+        <p>&nbsp;</p>
+        <input type="checkbox" name="autofill" value=""> Automatically fill up my gas tank
+        <p>&nbsp;</p>
+        <div class="btn" on-click="exitStation">Exit Gas Station</div>
+      </div>
+    </iron-pages>
+  </div>
 
 </template>
 
@@ -283,955 +283,372 @@
     </div>
   </div>
 </template>
-  </template>
+</template>
 
-  <script>
-    /**
-     * `sc-gasstationclient`
-     *
-     *
-     * @customElement
-     * @polymer
-     * @demo demo/index.html
-     */
-    class ScGasstationclient extends Polymer.Element {
-      static get is() { return 'sc-gasstationclient'; }
-      static get properties() {
-        return {
-          utility: {
-            type: Object,
-            value: function(){
-              return window.utility();
+<script>
+/**
+* `sc-gasstationclient`
+*
+*
+* @customElement
+* @polymer
+* @demo demo/index.html
+*/
+class ScGasstationclient extends Polymer.Element {
+  static get is() { return 'sc-gasstationclient'; }
+  static get properties() {
+    return {
+      utility: {
+        type: Object,
+        value: function(){
+          return window.utility();
+        }
+      },
+      keythereum: {
+        type: Object,
+        value: function(){
+          return window.keythereum;
+        }
+      },
+      gasstationready: {
+        type: Boolean,
+        value: true
+      },
+      project: {
+        type: String,
+        value: 'Swarm City'
+      },
+      short: {
+        type: String,
+        value: 'SWT'
+      },
+      selectedpage: {
+        type: Number,
+        value: 0
+      },
+      ethbalance: {
+        type: Number,
+        value: 0
+      },
+      tokenbalance: {
+        type: Number,
+        value: 0
+      },
+      currentprice: {
+        type: Number,
+        value: 0
+      },
+      erc20: {
+        type: String
+      },
+      privatekey: {
+        type: String
+      },
+      fillingbalance: {
+        type: Number,
+        value: 0
+      },
+      swtamount: {
+        type: Number,
+        value: 0.00
+      },
+      gasstation: {
+        type: Object,
+        value: {}
+      },
+      minimetoken: {
+        type: Object,
+        value: {}
+      }
+    };
+  }
+
+  toStation() {
+    console.log('to station');
+    this.selectedpage = 1;
+  }
+
+  toPersonalizedoffer() {
+    this.swtamount = this.pricefor1 * this.nrofdeals;
+    this.swtamount = this.swtamount.toFixed(4);
+    this.selectedpage = 2;
+  }
+
+  toEnd() {
+    this.selectedpage = 4;
+  }
+
+  exitStation() {
+    this.selectedpage = 0;
+  }
+
+  doSomething() {
+    console.log('something was selected, ', this.selecteditem);
+    this.nrofdeals = this.selecteditem.innerHTML;
+  }
+
+  _close() {
+    alert('In Swarm City, this close icon would take you back');
+  }
+
+  getPrice() {
+    //debugger;
+    return new Promise((resolve, reject) => {
+      // Load the translations.json file
+      const xobj = new XMLHttpRequest();
+      xobj.overrideMimeType('application/json');
+      xobj.open('GET', 'https://shrouded-sea-21642.herokuapp.com/price?from=' + this.address+'&tokenaddress=' + this.erc20, true);
+      xobj.onreadystatechange = () => {
+        if (xobj.readyState == 4 && xobj.status == '200') {
+          // Parse the response
+          const json = JSON.parse(xobj.responseText);
+          this.getPriceResult = json;
+          this.getPriceResult_pre = JSON.stringify(json, null, 2);
+          // this.currentprice = wei for 1 swt
+          this.currentprice = this.getPriceResult.price;
+
+          this.weineeded = 200000 * 2 * 1e9;
+          this.swtneeded = this.weineeded / this.currentprice;
+          this.pricefor1 = this.swtneeded.toFixed(4);
+          this.pricefor10 = this.pricefor1 * 10;
+          this.pricefor20 = this.pricefor1 * 20;
+          this.pricefor50 = this.pricefor1 * 50;
+          this.pricefor100 = this.pricefor1 * 100;
+
+          this.showfill = true;
+          resolve();
+        }
+      };
+      xobj.send(null);
+    });
+  }
+
+  showbalances() {
+    var self = this;
+    //debugger;
+    // animation to open up the balances view and check the current balance.
+    setTimeout(function() {
+      //your code to be executed after 1 second
+      self.shadowRoot.querySelector('#balancesview').hidden = false;
+    }, 1000);
+  }
+
+  fillUp() {
+
+    this.selectedpage = 3;
+    var audio = new Audio('../images/done.m4a');
+    //this.swtamount = 1.00;
+    var amounttoget = this.swtamount;
+
+    var self = this;
+    var now = 0;
+
+    var x = setInterval(function() {
+      now = now+0.0001;
+      //audio.play();
+      self.fillingbalance = now.toFixed(4);
+
+      // If the count down is finished, write some text
+      if (now >= amounttoget) {
+        //audio.play();
+        clearInterval(x);
+        self.fillingbalance = self.swtamount;
+        self.showbalances();
+      }
+    }, 5);
+    //
+    //
+    // var minime = this.web3.eth.contract(this.minimetoken.abi);
+    // var minimeInstance = minime.at(this.getPriceResult.token_address);
+    //
+    // minimeInstance.balanceOf(this.address,function(err,res){
+    //   console.log('SWT balance is', res.toFormat(2));
+    //   self.tokenbalance = res;
+    // });
+    //
+    // console.log('sending approval for ',this.tokenamount,'to',this.getPriceResult.to);
+    //
+    // var txData = minimeInstance.approve.getData(this.getPriceResult.to, this.tokenamount, function(a, b) {
+    //   //debugger;
+    // });
+    // minimeInstance.approve.estimateGas(this.getPriceResult.to, this.gastankaddress, this.tokenamount, {
+    //   from: self.address
+    // }, function(err, res) {
+    //
+    //   var gasRequired = res;
+    //
+    //   // get nonce
+    //   self.web3.eth.getTransactionCount(self.address, function(err, nonce) {
+    //
+    //     if (!nonce){
+    //       console.log('nonce of address',self.address,'is undefined...');
+    //       nonce = 0;
+    //     }
+    //
+    //     console.log('nonce of address',self.address,'is',nonce);
+    //
+    //     var txParams = {
+    //       nonce: nonce++,
+    //       gasPrice: self.gasPrice,
+    //       gasLimit: gasRequired,
+    //       to: self.getPriceResult.to,
+    //       from: self.getPriceResult.from,
+    //       data: txData,
+    //       chainId: 1
+    //     }
+    //
+    //     var tx = new EthJS.Tx(txParams);
+    //     tx.sign(self.privatekey_buffer);
+    //     var serializedTx = tx.serialize(); //.toString('hex');
+    //
+    //     var tx1 = '0x' + serializedTx.toString('hex');
+    //
+    //
+    //     console.log('tx1');
+    //     console.log(txParams);
+    //     console.log(tx1);
+    //
+    //     var gasstation = self.web3.eth.contract(self.gasstation.abi);
+    //     self.gasstationInstance = gasstation.at(self.getPriceResult.from);
+    //
+    //     console.log('price * amount - upfront = ' , self.getPriceResult.price*1-self.getPriceResult.upfront);
+    //
+    //     txData = self.gasstationInstance.fillup.getData(
+    //       self.getPriceResult.token_address,
+    //       self.getPriceResult.price,
+    //       self.getPriceResult.valid_until,
+    //       self.getPriceResult.random,
+    //       self.getPriceResult.upfront,
+    //       1,
+    //       self.getPriceResult.sig.v,
+    //       self.getPriceResult.sig.r,
+    //       self.getPriceResult.sig.s,
+    //       function(a, b) {
+    //         //debugger;
+    //       });
+    //
+    //
+    //       txParams = {
+    //         nonce: nonce++,
+    //         gasPrice: self.gasPrice,
+    //         gasLimit: 1000000,
+    //         from: self.getPriceResult.from,
+    //         to: self.getPriceResult.to,
+    //         data: txData,
+    //         chainId: 1
+    //       }
+    //
+    //       var tx2 = new EthJS.Tx(txParams);
+    //       tx2.sign(self.privatekey_buffer);
+    //       serializedTx = tx2.serialize(); //.toString('hex');
+    //
+    //       var tx2 = '0x' + serializedTx.toString('hex');
+    //
+    //       console.log('tx2');
+    //       console.log(txParams);
+    //       console.log(tx2);
+    //
+    //       var res = {
+    //         tx1: tx1,
+    //         tx2: tx2
+    //       };
+    //
+    //
+    //       // send the TX to the backend
+    //       var xhr = new XMLHttpRequest();
+    //       xhr.open("POST", '/fillup', true);
+    //       xhr.setRequestHeader("Content-Type", "application/json");
+    //       xhr.onreadystatechange = function() {
+    //         if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+    //           console.log(xhr);
+    //         }
+    //       }
+    //       xhr.send(JSON.stringify(res));
+    //
+    //       self.fillUpResult_pre = JSON.stringify(res, null, 2);
+    //
+    //     });
+    //   });
+
+  }
+
+  gettankbalance() {
+    var minime = this.web3.eth.contract(this.minimetoken.abi);
+    var minimeInstance = minime.at(this.erc20);
+    var self = this;
+    minimeInstance.balanceOf(this.getPriceResult.to, function(err, res) {
+      if (!err) {
+        console.log('GT balance at '+self.getPriceResult.to+'is', res.toFormat(2));
+        //self.tokenbalance = res;
+      }
+    });
+  }
+
+  ready() {
+    super.ready();
+
+    var self = this;
+
+    this.web3 = new Web3(new Web3.providers.HttpProvider("https://ethpool.swarm.city"));
+
+    this.tokenamount = 1;
+    this.gasPrice = 2 * 1e9; // 2 GWei
+
+    this.address = EthJS.Util.addHexPrefix(EthJS.Util.privateToAddress(EthJS.Util.addHexPrefix(this.privatekey)).toString('hex'));
+
+    this.privatekey_buffer = new EthJS.Buffer.Buffer(this.privatekey, "hex");
+
+
+    // Get the minime and token abi
+    var minimetokenabi;
+    var gassstationabi;
+
+    self.erc20 = "0xd2444365f33079be7160b7052cf544594c137e3d";
+
+    // Get abis
+    return new Promise((resolve, reject) => {
+      // Load the translations.json file
+      const xobj = new XMLHttpRequest();
+      xobj.overrideMimeType('application/json');
+      xobj.open('GET', 'https://shrouded-sea-21642.herokuapp.com/abi', true);
+      xobj.onreadystatechange = () => {
+        if (xobj.readyState == 4 && xobj.status == '200') {
+          // Parse the response
+          const json = JSON.parse(xobj.responseText);
+          console.log(json);
+          //return json;
+          self.minimetoken.abi = json.erc20;
+          self.gasstation.abi = json.gasstation;
+          var minime = self.web3.eth.contract(json.erc20);
+          var minimeInstance = minime.at(self.erc20);
+          minimeInstance.balanceOf(self.address, function(err, res) {
+            if (!err) {
+              console.log('SWT balance of client\'s account (',self.address,') is', res.toFormat(2));
+              var tokenshit = res / 1e18;
+              self.tokenbalance = tokenshit.toFixed(2);
+              //self.tokenbalance = res;
+
+              self.web3.eth.getBalance(self.address, function(err, res) {
+                console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
+                self.ethbalance = (res/ 1e18).toFixed(2);
+              });
+
+              self.getPrice();
+
             }
-          },
-          keythereum: {
-            type: Object,
-            value: function(){
-              return window.keythereum;
-            }
-          },
-          gasstationready: {
-            type: Boolean,
-            value: true
-          },
-          project: {
-            type: String,
-            value: 'Swarm City'
-          },
-          short: {
-            type: String,
-            value: 'SWT'
-          },
-          selectedpage: {
-            type: Number,
-            value: 0
-          },
-          ethbalance: {
-            type: Number,
-            value: 0
-          },
-          tokenbalance: {
-            type: Number,
-            value: 0
-          },
-          currentprice: {
-            type: Number,
-            value: 0
-          },
-          erc20: {
-            type: String
-          },
-          privatekey: {
-            type: String
-          },
-          fillingbalance: {
-            type: Number,
-            value: 0
-          },
-          swtamount: {
-            type: Number,
-            value: 0.00
-          },
-          gasstation: {
-            type: Object,
-            value:
-            {
-              "contract_name": "gasStation",
-              "abi": [
-                {
-                  "constant": true,
-                  "inputs": [],
-                  "name": "owner",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "address"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": false,
-                  "inputs": [
-                    {
-                      "name": "price",
-                      "type": "uint256"
-                    },
-                    {
-                      "name": "valid_until",
-                      "type": "uint256"
-                    },
-                    {
-                      "name": "random",
-                      "type": "uint256"
-                    },
-                    {
-                      "name": "upfront",
-                      "type": "uint256"
-                    },
-                    {
-                      "name": "amount",
-                      "type": "uint256"
-                    },
-                    {
-                      "name": "v",
-                      "type": "uint8"
-                    },
-                    {
-                      "name": "r",
-                      "type": "bytes32"
-                    },
-                    {
-                      "name": "s",
-                      "type": "bytes32"
-                    }
-                  ],
-                  "name": "fillup",
-                  "outputs": [],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": false,
-                  "inputs": [
-                    {
-                      "name": "newOwner",
-                      "type": "address"
-                    }
-                  ],
-                  "name": "transferOwnership",
-                  "outputs": [],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "inputs": [
-                    {
-                      "name": "_tokenAddress",
-                      "type": "address"
-                    }
-                  ],
-                  "payable": true,
-                  "type": "constructor"
-                }
-              ],
-              "unlinked_binary": "0x6060604052604051602080610423833981016040528080519150505b5b60008054600160a060020a03191633600160a060020a03161790555b60018054600160a060020a031916600160a060020a0383161790555b505b6103be806100656000396000f300606060405263ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416638da5cb5b8114610053578063f251fc0914610082578063f2fde38b146100b2575b600080fd5b341561005e57600080fd5b6100666100d3565b604051600160a060020a03909116815260200160405180910390f35b341561008d57600080fd5b6100b060043560243560443560643560843560ff60a4351660c43560e4356100e2565b005b34156100bd57600080fd5b6100b0600160a060020a036004351661033a565b005b600054600160a060020a031681565b600154600090600160a060020a03166323b872dd33308885604051602001526040517c010000000000000000000000000000000000000000000000000000000063ffffffff8616028152600160a060020a0393841660048201529190921660248201526044810191909152606401602060405180830381600087803b151561016957600080fd5b6102c65a03f1151561017a57600080fd5b50505060405180519050151561018f57600080fd5b60028933308b8b8b6000604051602001526040518087815260200186600160a060020a0316600160a060020a03166c0100000000000000000000000002815260140185600160a060020a0316600160a060020a03166c01000000000000000000000000028152601401848152602001838152602001828152602001965050505050505060206040518083038160008661646e5a03f1151561022f57600080fd5b5050604051805160008181526002602052604090205490925060ff1615905080156102da5750600054600160a060020a03166001828686866040516000815260200160405260006040516020015260405193845260ff90921660208085019190915260408085019290925260608401929092526080909201915160208103908084039060008661646e5a03f115156102c657600080fd5b505060206040510351600160a060020a0316145b80156102e65750874311155b156102f057600080fd5b33600160a060020a03166108fc8a8781151561030857fe5b049081150290604051600060405180830381858888f19350505050151561032e57600080fd5b5b505050505050505050565b60005433600160a060020a0390811691161461035557600080fd5b600160a060020a0381161561038d576000805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a0383161790555b5b5b505600a165627a7a723058200a6ad73f5058d6cc2a693ad547327fc7465c3caba6a306432bee73d00c2ec9e10029",
-              "networks": {},
-              "schema_version": "0.0.5",
-              "updated_at": 1504533550399
-            }
-          },
+          });
+          //debugger;
+          resolve();
+        }
+      };
+      xobj.send(null);
+    });
 
-          minimetoken: {
-            type: Object,
-            value: {
-              "contract_name": "MiniMeToken",
-              "abi": [
-                {
-                  "constant": true,
-                  "inputs": [],
-                  "name": "name",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "string"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": false,
-                  "inputs": [
-                    {
-                      "name": "_spender",
-                      "type": "address"
-                    },
-                    {
-                      "name": "_amount",
-                      "type": "uint256"
-                    }
-                  ],
-                  "name": "approve",
-                  "outputs": [
-                    {
-                      "name": "success",
-                      "type": "bool"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [],
-                  "name": "creationBlock",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "uint256"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [],
-                  "name": "totalSupply",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "uint256"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": false,
-                  "inputs": [
-                    {
-                      "name": "_from",
-                      "type": "address"
-                    },
-                    {
-                      "name": "_to",
-                      "type": "address"
-                    },
-                    {
-                      "name": "_amount",
-                      "type": "uint256"
-                    }
-                  ],
-                  "name": "transferFrom",
-                  "outputs": [
-                    {
-                      "name": "success",
-                      "type": "bool"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [],
-                  "name": "decimals",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "uint8"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": false,
-                  "inputs": [
-                    {
-                      "name": "_newController",
-                      "type": "address"
-                    }
-                  ],
-                  "name": "changeController",
-                  "outputs": [],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [
-                    {
-                      "name": "_owner",
-                      "type": "address"
-                    },
-                    {
-                      "name": "_blockNumber",
-                      "type": "uint256"
-                    }
-                  ],
-                  "name": "balanceOfAt",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "uint256"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [],
-                  "name": "version",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "string"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": false,
-                  "inputs": [
-                    {
-                      "name": "_cloneTokenName",
-                      "type": "string"
-                    },
-                    {
-                      "name": "_cloneDecimalUnits",
-                      "type": "uint8"
-                    },
-                    {
-                      "name": "_cloneTokenSymbol",
-                      "type": "string"
-                    },
-                    {
-                      "name": "_snapshotBlock",
-                      "type": "uint256"
-                    },
-                    {
-                      "name": "_transfersEnabled",
-                      "type": "bool"
-                    }
-                  ],
-                  "name": "createCloneToken",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "address"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [
-                    {
-                      "name": "_owner",
-                      "type": "address"
-                    }
-                  ],
-                  "name": "balanceOf",
-                  "outputs": [
-                    {
-                      "name": "balance",
-                      "type": "uint256"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [],
-                  "name": "parentToken",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "address"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": false,
-                  "inputs": [
-                    {
-                      "name": "_owner",
-                      "type": "address"
-                    },
-                    {
-                      "name": "_amount",
-                      "type": "uint256"
-                    }
-                  ],
-                  "name": "generateTokens",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "bool"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [],
-                  "name": "symbol",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "string"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [
-                    {
-                      "name": "_blockNumber",
-                      "type": "uint256"
-                    }
-                  ],
-                  "name": "totalSupplyAt",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "uint256"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": false,
-                  "inputs": [
-                    {
-                      "name": "_to",
-                      "type": "address"
-                    },
-                    {
-                      "name": "_amount",
-                      "type": "uint256"
-                    }
-                  ],
-                  "name": "transfer",
-                  "outputs": [
-                    {
-                      "name": "success",
-                      "type": "bool"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [],
-                  "name": "transfersEnabled",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "bool"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [],
-                  "name": "parentSnapShotBlock",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "uint256"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": false,
-                  "inputs": [
-                    {
-                      "name": "_spender",
-                      "type": "address"
-                    },
-                    {
-                      "name": "_amount",
-                      "type": "uint256"
-                    },
-                    {
-                      "name": "_extraData",
-                      "type": "bytes"
-                    }
-                  ],
-                  "name": "approveAndCall",
-                  "outputs": [
-                    {
-                      "name": "success",
-                      "type": "bool"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": false,
-                  "inputs": [
-                    {
-                      "name": "_owner",
-                      "type": "address"
-                    },
-                    {
-                      "name": "_amount",
-                      "type": "uint256"
-                    }
-                  ],
-                  "name": "destroyTokens",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "bool"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [
-                    {
-                      "name": "_owner",
-                      "type": "address"
-                    },
-                    {
-                      "name": "_spender",
-                      "type": "address"
-                    }
-                  ],
-                  "name": "allowance",
-                  "outputs": [
-                    {
-                      "name": "remaining",
-                      "type": "uint256"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [],
-                  "name": "tokenFactory",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "address"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": false,
-                  "inputs": [
-                    {
-                      "name": "_transfersEnabled",
-                      "type": "bool"
-                    }
-                  ],
-                  "name": "enableTransfers",
-                  "outputs": [],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "constant": true,
-                  "inputs": [],
-                  "name": "controller",
-                  "outputs": [
-                    {
-                      "name": "",
-                      "type": "address"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "function"
-                },
-                {
-                  "inputs": [
-                    {
-                      "name": "_tokenFactory",
-                      "type": "address"
-                    },
-                    {
-                      "name": "_parentToken",
-                      "type": "address"
-                    },
-                    {
-                      "name": "_parentSnapShotBlock",
-                      "type": "uint256"
-                    },
-                    {
-                      "name": "_tokenName",
-                      "type": "string"
-                    },
-                    {
-                      "name": "_decimalUnits",
-                      "type": "uint8"
-                    },
-                    {
-                      "name": "_tokenSymbol",
-                      "type": "string"
-                    },
-                    {
-                      "name": "_transfersEnabled",
-                      "type": "bool"
-                    }
-                  ],
-                  "payable": false,
-                  "type": "constructor"
-                },
-                {
-                  "payable": true,
-                  "type": "fallback"
-                },
-                {
-                  "anonymous": false,
-                  "inputs": [
-                    {
-                      "indexed": true,
-                      "name": "_from",
-                      "type": "address"
-                    },
-                    {
-                      "indexed": true,
-                      "name": "_to",
-                      "type": "address"
-                    },
-                    {
-                      "indexed": false,
-                      "name": "_amount",
-                      "type": "uint256"
-                    }
-                  ],
-                  "name": "Transfer",
-                  "type": "event"
-                },
-                {
-                  "anonymous": false,
-                  "inputs": [
-                    {
-                      "indexed": true,
-                      "name": "_cloneToken",
-                      "type": "address"
-                    },
-                    {
-                      "indexed": false,
-                      "name": "_snapshotBlock",
-                      "type": "uint256"
-                    }
-                  ],
-                  "name": "NewCloneToken",
-                  "type": "event"
-                },
-                {
-                  "anonymous": false,
-                  "inputs": [
-                    {
-                      "indexed": true,
-                      "name": "_owner",
-                      "type": "address"
-                    },
-                    {
-                      "indexed": true,
-                      "name": "_spender",
-                      "type": "address"
-                    },
-                    {
-                      "indexed": false,
-                      "name": "_amount",
-                      "type": "uint256"
-                    }
-                  ],
-                  "name": "Approval",
-                  "type": "event"
-                }
-              ]
-            }
-          }
-        };
-      }
+    // End getting minime and token abi
 
-      toStation() {
-        console.log('to station');
-        this.selectedpage = 1;
-      }
+  }
+}
 
-      toPersonalizedoffer() {
-        this.selectedpage = 2;
-      }
-
-      toEnd() {
-        this.selectedpage = 4;
-      }
-
-      exitStation() {
-        this.selectedpage = 0;
-      }
-
-      doSomething() {
-        console.log('something was selected, ', this.selecteditem);
-        this.nrofdeals = this.selecteditem.innerHTML;
-      }
-
-      _close() {
-        alert('In Swarm City, this close icon would take you back');
-      }
-
-      getPrice() {
-        //debugger;
-        return new Promise((resolve, reject) => {
-          // Load the translations.json file
-          const xobj = new XMLHttpRequest();
-          xobj.overrideMimeType('application/json');
-          xobj.open('GET', 'https://shrouded-sea-21642.herokuapp.com/price?from=' + this.address+'&tokenaddress=' + this.erc20, true);
-          xobj.onreadystatechange = () => {
-            if (xobj.readyState == 4 && xobj.status == '200') {
-              // Parse the response
-              const json = JSON.parse(xobj.responseText);
-              //debugger;
-              this.getPriceResult = json;
-              this.getPriceResult_pre = JSON.stringify(json, null, 2);
-              // this.currentprice = wei for 1 swt
-              this.currentprice = this.getPriceResult.price;
-
-              this.weineeded = 200000 * 2 * 1e9;
-              this.swtneeded = this.weineeded / this.currentprice;
-              this.pricefor1 = this.swtneeded.toFixed(4);
-              this.pricefor10 = this.pricefor1 * 10;
-              this.pricefor20 = this.pricefor1 * 20;
-              this.pricefor50 = this.pricefor1 * 50;
-              this.pricefor100 = this.pricefor1 * 100;
-
-              this.showfill = true;
-              resolve();
-            }
-          };
-          xobj.send(null);
-        });
-      }
-
-      showbalances() {
-        var self = this;
-        //debugger;
-        // animation to open up the balances view and check the current balance.
-        setTimeout(function() {
-          //your code to be executed after 1 second
-          var hidden = document.getElementById("balancesview");
-          hidden.hidden = false;
-        }, 1000);
-      }
-
-      fillUp() {
-
-        this.selectedpage = 3;
-        var audio = new Audio('../images/done.m4a');
-        this.swtamount = 1.00;
-        var amounttoget = 1;
-
-        var self = this;
-        var now = 0;
-
-        var x = setInterval(function() {
-          now = now+0.01;
-          //audio.play();
-          self.fillingbalance = now.toFixed(2);
-
-          // If the count down is finished, write some text
-          if (now >= amounttoget) {
-            //audio.play();
-            clearInterval(x);
-            self.showbalances();
-          }
-        }, 100);
-        //
-        //
-        // var minime = this.web3.eth.contract(this.minimetoken.abi);
-        // var minimeInstance = minime.at(this.getPriceResult.token_address);
-        //
-        // minimeInstance.balanceOf(this.address,function(err,res){
-        //   console.log('SWT balance is', res.toFormat(2));
-        //   self.tokenbalance = res;
-        // });
-        //
-        // console.log('sending approval for ',this.tokenamount,'to',this.getPriceResult.to);
-        //
-        // var txData = minimeInstance.approve.getData(this.getPriceResult.to, this.tokenamount, function(a, b) {
-        //   //debugger;
-        // });
-        // minimeInstance.approve.estimateGas(this.getPriceResult.to, this.gastankaddress, this.tokenamount, {
-        //   from: self.address
-        // }, function(err, res) {
-        //
-        //   var gasRequired = res;
-        //
-        //   // get nonce
-        //   self.web3.eth.getTransactionCount(self.address, function(err, nonce) {
-        //
-        //     if (!nonce){
-        //       console.log('nonce of address',self.address,'is undefined...');
-        //       nonce = 0;
-        //     }
-        //
-        //     console.log('nonce of address',self.address,'is',nonce);
-        //
-        //     var txParams = {
-        //       nonce: nonce++,
-        //       gasPrice: self.gasPrice,
-        //       gasLimit: gasRequired,
-        //       to: self.getPriceResult.to,
-        //       from: self.getPriceResult.from,
-        //       data: txData,
-        //       chainId: 1
-        //     }
-        //
-        //     var tx = new EthJS.Tx(txParams);
-        //     tx.sign(self.privatekey_buffer);
-        //     var serializedTx = tx.serialize(); //.toString('hex');
-        //
-        //     var tx1 = '0x' + serializedTx.toString('hex');
-        //
-        //
-        //     console.log('tx1');
-        //     console.log(txParams);
-        //     console.log(tx1);
-        //
-        //     var gasstation = self.web3.eth.contract(self.gasstation.abi);
-        //     self.gasstationInstance = gasstation.at(self.getPriceResult.from);
-        //
-        //     console.log('price * amount - upfront = ' , self.getPriceResult.price*1-self.getPriceResult.upfront);
-        //
-        //     txData = self.gasstationInstance.fillup.getData(
-        //       self.getPriceResult.token_address,
-        //       self.getPriceResult.price,
-        //       self.getPriceResult.valid_until,
-        //       self.getPriceResult.random,
-        //       self.getPriceResult.upfront,
-        //       1,
-        //       self.getPriceResult.sig.v,
-        //       self.getPriceResult.sig.r,
-        //       self.getPriceResult.sig.s,
-        //       function(a, b) {
-        //         //debugger;
-        //       });
-        //
-        //
-        //       txParams = {
-        //         nonce: nonce++,
-        //         gasPrice: self.gasPrice,
-        //         gasLimit: 1000000,
-        //         from: self.getPriceResult.from,
-        //         to: self.getPriceResult.to,
-        //         data: txData,
-        //         chainId: 1
-        //       }
-        //
-        //       var tx2 = new EthJS.Tx(txParams);
-        //       tx2.sign(self.privatekey_buffer);
-        //       serializedTx = tx2.serialize(); //.toString('hex');
-        //
-        //       var tx2 = '0x' + serializedTx.toString('hex');
-        //
-        //       console.log('tx2');
-        //       console.log(txParams);
-        //       console.log(tx2);
-        //
-        //       var res = {
-        //         tx1: tx1,
-        //         tx2: tx2
-        //       };
-        //
-        //
-        //       // send the TX to the backend
-        //       var xhr = new XMLHttpRequest();
-        //       xhr.open("POST", '/fillup', true);
-        //       xhr.setRequestHeader("Content-Type", "application/json");
-        //       xhr.onreadystatechange = function() {
-        //         if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
-        //           console.log(xhr);
-        //         }
-        //       }
-        //       xhr.send(JSON.stringify(res));
-        //
-        //       self.fillUpResult_pre = JSON.stringify(res, null, 2);
-        //
-        //     });
-        //   });
-
-      }
-
-      gettankbalance() {
-        var minime = this.web3.eth.contract(this.minimetoken.abi);
-        var minimeInstance = minime.at(this.erc20);
-        var self = this;
-        minimeInstance.balanceOf(this.getPriceResult.to, function(err, res) {
-          if (!err) {
-            console.log('GT balance at '+self.getPriceResult.to+'is', res.toFormat(2));
-            //self.tokenbalance = res;
-          }
-        });
-      }
-
-      ready() {
-        super.ready();
-
-        var self = this;
-
-        this.tokenamount = 1;
-        this.gasPrice = 2 * 1e9; // 2 GWei
-
-        this.address = EthJS.Util.addHexPrefix(EthJS.Util.privateToAddress(EthJS.Util.addHexPrefix(this.privatekey)).toString('hex'));
-
-        this.privatekey_buffer = new EthJS.Buffer.Buffer(this.privatekey, "hex");
-
-        this.web3 = new Web3(new Web3.providers.HttpProvider("https://ethpool.swarm.city"));
-
-        var minime = this.web3.eth.contract(this.minimetoken.abi);
-        var minimeInstance = minime.at(this.erc20);
-
-        minimeInstance.balanceOf(this.address, function(err, res) {
-          if (!err) {
-            console.log('SWT balance of client\'s account (',self.address,') is', res.toFormat(2));
-            var tokenshit = res / 1e18;
-            self.tokenbalance = tokenshit.toFixed(2);
-            //self.tokenbalance = res;
-          }
-        });
-
-        this.web3.eth.getBalance(this.address, function(err, res) {
-          console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
-          self.ethbalance = (res/ 1e18).toFixed(2);
-        });
-
-        this.getPrice();
-
-      }
-    }
-
-    window.customElements.define(ScGasstationclient.is, ScGasstationclient);
-  </script>
+window.customElements.define(ScGasstationclient.is, ScGasstationclient);
+</script>
 </dom-module>
