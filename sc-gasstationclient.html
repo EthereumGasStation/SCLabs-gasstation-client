@@ -369,8 +369,8 @@ class ScGasstationclient extends Polymer.Element {
   }
 
   toPersonalizedoffer() {
-    this.swtamount = this.pricefor1 * this.nrofdeals;
-    this.swtamount = this.swtamount.toFixed(4);
+    this.swtamount = this.pricefor1 * this.nrofdeals * 1e18;
+    this.swtamount = Math.floor(this.swtamount.toFixed(4));
     this.selectedpage = 2;
   }
 
@@ -459,21 +459,30 @@ class ScGasstationclient extends Polymer.Element {
     //
     //
     // var minime = this.web3.eth.contract(this.minimetoken.abi);
-    // var minimeInstance = minime.at(this.getPriceResult.token_address);
-    //
+    // var minimeInstance = minime.at(this.erc20);
+
+    //debugger;
+
     // minimeInstance.balanceOf(this.address,function(err,res){
     //   console.log('SWT balance is', res.toFormat(2));
     //   self.tokenbalance = res;
     // });
     //
-    // console.log('sending approval for ',this.tokenamount,'to',this.getPriceResult.to);
+    // console.log('sending approval for ',this.swtamount,'to',this.getPriceResult.to);
     //
-    // var txData = minimeInstance.approve.getData(this.getPriceResult.to, this.tokenamount, function(a, b) {
+    // var txData = minimeInstance.approve.getData(this.getPriceResult.to, this.swtamount, function(a, b) {
     //   //debugger;
     // });
-    // minimeInstance.approve.estimateGas(this.getPriceResult.to, this.gastankaddress, this.tokenamount, {
-    //   from: self.address
-    // }, function(err, res) {
+    // debugger;
+    // var result = web3.eth.estimateGas({
+    //     to: "0xc4abd0339eb8d57087278718986382264244252f",
+    //     data: "0xc6888fa10000000000000000000000000000000000000000000000000000000000000003"
+    // });
+
+    // self.web3.eth.estimateGas({ to: self.getPriceResult.to, data: txData },
+    // //minimeInstance.approve.estimateGas(this.getPriceResult.to, this.swtamount, {
+    // //  from: self.address
+    // function(err, res) {
     //
     //   var gasRequired = res;
     //
@@ -566,6 +575,7 @@ class ScGasstationclient extends Polymer.Element {
     //       xhr.send(JSON.stringify(res));
     //
     //       self.fillUpResult_pre = JSON.stringify(res, null, 2);
+    //       debugger;
     //
     //     });
     //   });
