@@ -6,7 +6,6 @@
 
     <title>sc-gasstationclient demo</title>
 
-
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
@@ -23,7 +22,12 @@
       <h3>Basic sc-gasstationclient demo</h3>
       <demo-snippet>
         <template>
-          <sc-gasstationclient privatekey="87c530f508c58eb8a0f3c46a4b33d420dfc3e8c0839370b03db2577fede67400" erc20="0xd2444365f33079be7160b7052cf544594c137e3d"></sc-gasstationclient>
+          <sc-gasstationclient
+            privatekey="87c530f508c58eb8a0f3c46a4b33d420dfc3e8c0839370b03db2577fede67400"
+            erc20="0xd2444365f33079be7160b7052cf544594c137e3d"
+            ethnode="https://ethpool.swarm.city"
+            apiendpoint="http://localhost:3000"
+            ></sc-gasstationclient>
         </template>
       </demo-snippet>
     </div>

@@ -1,7 +1,7 @@
-<link rel="import" href="../polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/mixins/gesture-event-listeners.html">
 
-<script src="utility.js"></script>
+<script src="./utility.js"></script>
 <!-- <script src="keythereum.js"></script> -->
 <script src="../web3/dist/web3.min.js"></script>
 <script src="../browser-builds/dist/ethereumjs-tx.js"></script>
@@ -9,7 +9,7 @@
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-pages/iron-pages.html">
 <link rel="import" href="../iron-selector/iron-selector.html">
-<link rel="import" href="./shared-styles.html">
+<!-- <link rel="import" href="./shared-styles.html"> -->
 
 <dom-module id="sc-gasstationclient">
   <template>
@@ -359,6 +359,12 @@ class ScGasstationclient extends Polymer.Element {
       minimetoken: {
         type: Object,
         value: {}
+      },
+      apiendpoint: {
+        type: String,
+      },
+      ethnode: {
+        type: String
       }
     };
   }
@@ -397,7 +403,7 @@ class ScGasstationclient extends Polymer.Element {
       // Load the translations.json file
       const xobj = new XMLHttpRequest();
       xobj.overrideMimeType('application/json');
-      xobj.open('GET', 'https://shrouded-sea-21642.herokuapp.com/price?from=' + this.address+'&tokenaddress=' + this.erc20, true);
+      xobj.open('GET', this.apiendpoint + '/price?from=' + this.address+'&tokenaddress=' + this.erc20, true);
       xobj.onreadystatechange = () => {
         if (xobj.readyState == 4 && xobj.status == '200') {
           // Parse the response
@@ -462,16 +468,17 @@ class ScGasstationclient extends Polymer.Element {
     var minime = this.web3.eth.contract(this.minimetoken.abi);
     var minimeInstance = minime.at(this.getPriceResult.token_address);
 
-    minimeInstance.balanceOf(this.address, function(err, res) {
-      console.log('SWT balance is', res.toFormat(2));
-      self.tokenbalance = res;
-    });
+    // minimeInstance.balanceOf(this.address, function(err, res) {
+    //   console.log('SWT balance is', res.toFormat(2));
+    //   self.tokenbalance = res;
+    // });
 
     console.log('sending approval for ', this.tokenamount, 'to', this.getPriceResult.to);
 
     var txData = minimeInstance.approve.getData(this.getPriceResult.to, this.tokenamount, function(a, b) {
       //debugger;
     });
+  
     minimeInstance.approve.estimateGas(this.getPriceResult.from, this.getPriceResult.to, this.tokenamount, {
       from: self.address
     }, function(err, res) {
@@ -551,7 +558,7 @@ class ScGasstationclient extends Polymer.Element {
 
         // send the TX to the backend
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", '/fillup', true);
+        xhr.open("POST", self.apiendpoint + '/fillup', true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onreadystatechange = function() {
           if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
@@ -563,127 +570,7 @@ class ScGasstationclient extends Polymer.Element {
 
     });
         });
-    // var minime = this.web3.eth.contract(this.minimetoken.abi);
-    // var minimeInstance = minime.at(this.erc20);
-
-    //debugger;
-
-    // minimeInstance.balanceOf(this.address,function(err,res){
-    //   console.log('SWT balance is', res.toFormat(2));
-    //   self.tokenbalance = res;
-    // });
-    //
-    // console.log('sending approval for ',this.swtamount,'to',this.getPriceResult.to);
-    //
-    // var txData = minimeInstance.approve.getData(this.getPriceResult.to, this.swtamount, function(a, b) {
-    //   //debugger;
-    // });
-    // debugger;
-    // var result = web3.eth.estimateGas({
-    //     to: "0xc4abd0339eb8d57087278718986382264244252f",
-    //     data: "0xc6888fa10000000000000000000000000000000000000000000000000000000000000003"
-    // });
-
-    // self.web3.eth.estimateGas({ to: self.getPriceResult.to, data: txData },
-    // //minimeInstance.approve.estimateGas(this.getPriceResult.to, this.swtamount, {
-    // //  from: self.address
-    // function(err, res) {
-    //
-    //   var gasRequired = res;
-    //
-    //   // get nonce
-    //   self.web3.eth.getTransactionCount(self.address, function(err, nonce) {
-    //
-    //     if (!nonce){
-    //       console.log('nonce of address',self.address,'is undefined...');
-    //       nonce = 0;
-    //     }
-    //
-    //     console.log('nonce of address',self.address,'is',nonce);
-    //
-    //     var txParams = {
-    //       nonce: nonce++,
-    //       gasPrice: self.gasPrice,
-    //       gasLimit: gasRequired,
-    //       to: self.getPriceResult.to,
-    //       from: self.getPriceResult.from,
-    //       data: txData,
-    //       chainId: 1
-    //     }
-    //
-    //     var tx = new EthJS.Tx(txParams);
-    //     tx.sign(self.privatekey_buffer);
-    //     var serializedTx = tx.serialize(); //.toString('hex');
-    //
-    //     var tx1 = '0x' + serializedTx.toString('hex');
-    //
-    //
-    //     console.log('tx1');
-    //     console.log(txParams);
-    //     console.log(tx1);
-    //
-    //     var gasstation = self.web3.eth.contract(self.gasstation.abi);
-    //     self.gasstationInstance = gasstation.at(self.getPriceResult.from);
-    //
-    //     console.log('price * amount - upfront = ' , self.getPriceResult.price*1-self.getPriceResult.upfront);
-    //
-    //     txData = self.gasstationInstance.fillup.getData(
-    //       self.getPriceResult.token_address,
-    //       self.getPriceResult.price,
-    //       self.getPriceResult.valid_until,
-    //       self.getPriceResult.random,
-    //       self.getPriceResult.upfront,
-    //       1,
-    //       self.getPriceResult.sig.v,
-    //       self.getPriceResult.sig.r,
-    //       self.getPriceResult.sig.s,
-    //       function(a, b) {
-    //         //debugger;
-    //       });
-    //
-    //
-    //       txParams = {
-    //         nonce: nonce++,
-    //         gasPrice: self.gasPrice,
-    //         gasLimit: 1000000,
-    //         from: self.getPriceResult.from,
-    //         to: self.getPriceResult.to,
-    //         data: txData,
-    //         chainId: 1
-    //       }
-    //
-    //       var tx2 = new EthJS.Tx(txParams);
-    //       tx2.sign(self.privatekey_buffer);
-    //       serializedTx = tx2.serialize(); //.toString('hex');
-    //
-    //       var tx2 = '0x' + serializedTx.toString('hex');
-    //
-    //       console.log('tx2');
-    //       console.log(txParams);
-    //       console.log(tx2);
-    //
-    //       var res = {
-    //         tx1: tx1,
-    //         tx2: tx2
-    //       };
-    //
-    //
-    //       // send the TX to the backend
-    //       var xhr = new XMLHttpRequest();
-    //       xhr.open("POST", '/fillup', true);
-    //       xhr.setRequestHeader("Content-Type", "application/json");
-    //       xhr.onreadystatechange = function() {
-    //         if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
-    //           console.log(xhr);
-    //         }
-    //       }
-    //       xhr.send(JSON.stringify(res));
-    //
-    //       self.fillUpResult_pre = JSON.stringify(res, null, 2);
-    //       debugger;
-    //
-    //     });
-    //   });
+    
 
   }
 
@@ -704,7 +591,7 @@ class ScGasstationclient extends Polymer.Element {
 
     var self = this;
 
-    this.web3 = new Web3(new Web3.providers.HttpProvider("https://ethpool.swarm.city"));
+    this.web3 = new Web3(new Web3.providers.HttpProvider(this.ethnode));
 
     this.tokenamount = 1;
     this.gasPrice = 2 * 1e9; // 2 GWei
@@ -717,6 +604,8 @@ class ScGasstationclient extends Polymer.Element {
     var minimetokenabi;
     var gassstationabi;
 
+  self.getPrice().then(function(){
+
     self.erc20 = "0xd2444365f33079be7160b7052cf544594c137e3d";
 
     // Get abis
@@ -724,7 +613,7 @@ class ScGasstationclient extends Polymer.Element {
       // Load the translations.json file
       const xobj = new XMLHttpRequest();
       xobj.overrideMimeType('application/json');
-      xobj.open('GET', 'https://shrouded-sea-21642.herokuapp.com/abi', true);
+      xobj.open('GET', self.apiendpoint + '/abi', true);
       xobj.onreadystatechange = () => {
         if (xobj.readyState == 4 && xobj.status == '200') {
           // Parse the response
@@ -740,14 +629,13 @@ class ScGasstationclient extends Polymer.Element {
               console.log('SWT balance of client\'s account (',self.address,') is', res.toFormat(2));
               var tokenshit = res / 1e18;
               self.tokenbalance = tokenshit.toFixed(2);
-              //self.tokenbalance = res;
 
               self.web3.eth.getBalance(self.address, function(err, res) {
                 console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
                 self.ethbalance = (res/ 1e18).toFixed(2);
               });
 
-              self.getPrice();
+            
 
             }
           });
@@ -757,6 +645,8 @@ class ScGasstationclient extends Polymer.Element {
       };
       xobj.send(null);
     });
+
+  });
 
     // End getting minime and token abi
 
