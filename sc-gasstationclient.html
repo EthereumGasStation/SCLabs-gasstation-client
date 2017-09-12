@@ -1,15 +1,15 @@
-<link rel="import" href="../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
-<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/mixins/gesture-event-listeners.html">
+<link rel="import" href="../polymer/polymer-element.html">
 
 <script src="utility.js"></script>
 <!-- <script src="keythereum.js"></script> -->
-<script src="../bower_components/web3/dist/web3.min.js"></script>
-<script src="../bower_components/browser-builds/dist/ethereumjs-tx.js"></script>
+<script src="../web3/dist/web3.min.js"></script>
+<script src="../browser-builds/dist/ethereumjs-tx.js"></script>
 
-<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
-<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
-<link rel="import" href="../shared-styles.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-pages/iron-pages.html">
+<link rel="import" href="../iron-selector/iron-selector.html">
+<link rel="import" href="./shared-styles.html">
 
 <dom-module id="sc-gasstationclient">
   <template>
@@ -456,8 +456,113 @@ class ScGasstationclient extends Polymer.Element {
         self.showbalances();
       }
     }, 5);
-    //
-    //
+
+
+
+    var minime = this.web3.eth.contract(this.minimetoken.abi);
+    var minimeInstance = minime.at(this.getPriceResult.token_address);
+
+    minimeInstance.balanceOf(this.address, function(err, res) {
+      console.log('SWT balance is', res.toFormat(2));
+      self.tokenbalance = res;
+    });
+
+    console.log('sending approval for ', this.tokenamount, 'to', this.getPriceResult.to);
+
+    var txData = minimeInstance.approve.getData(this.getPriceResult.to, this.tokenamount, function(a, b) {
+      //debugger;
+    });
+    minimeInstance.approve.estimateGas(this.getPriceResult.from, this.getPriceResult.to, this.tokenamount, {
+      from: self.address
+    }, function(err, res) {
+      if (err) {
+        console.log(err);
+      }
+      var gasRequired = res;
+
+      // get nonce
+      self.web3.eth.getTransactionCount(self.address, function(err, nonce) {
+
+        if (!nonce) {
+          console.log('nonce of address', self.address, 'is undefined...');
+          nonce = 0;
+        }
+
+        console.log('nonce of address', self.address, 'is', nonce);
+
+        var txParams = {
+          nonce: nonce++,
+          gasPrice: self.gasPrice,
+          gasLimit: gasRequired,
+          to: self.getPriceResult.token_address,
+          from: self.address,
+          data: txData,
+          chainId: 1
+        }
+
+        var tx = new EthJS.Tx(txParams);
+        tx.sign(self.privatekey_buffer);
+        var serializedTx = tx.serialize(); //.toString('hex');
+
+        var tx1 = '0x' + serializedTx.toString('hex');
+
+        console.log('tx1');
+        console.log(txParams);
+        console.log(tx1);
+
+        var gasstation = self.web3.eth.contract(self.gasstation.abi);
+        self.gasstationInstance = gasstation.at(self.getPriceResult.to);
+
+        txData = self.gasstationInstance.fillup.getData(
+          self.getPriceResult.token_address,
+          self.getPriceResult.price,
+          self.getPriceResult.valid_until,
+          self.getPriceResult.random,
+          self.getPriceResult.upfront,
+          1,
+          self.getPriceResult.sig.v,
+          self.getPriceResult.sig.r,
+          self.getPriceResult.sig.s);
+
+        txParams = {
+          nonce: nonce++,
+          gasPrice: self.gasPrice,
+          gasLimit: 1000000,
+          from: self.address,
+          to: self.getPriceResult.to,
+          data: txData,
+          chainId: 1
+        }
+
+        var tx2 = new EthJS.Tx(txParams);
+        tx2.sign(self.privatekey_buffer);
+        serializedTx = tx2.serialize();
+
+        var tx2 = '0x' + serializedTx.toString('hex');
+
+        console.log('tx2');
+        console.log(txParams);
+        console.log(tx2);
+
+        var res = {
+          tx1: tx1,
+          tx2: tx2
+        };
+
+        // send the TX to the backend
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", '/fillup', true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+            console.log(xhr);
+          }
+        }
+        xhr.send(JSON.stringify(res));
+
+
+    });
+        });
     // var minime = this.web3.eth.contract(this.minimetoken.abi);
     // var minimeInstance = minime.at(this.erc20);
 
