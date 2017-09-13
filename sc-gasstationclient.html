@@ -643,6 +643,7 @@ class ScGasstationclient extends Polymer.Element {
               });
               //debugger;
               resolve();
+              self.gasstationready = true;
             }
           };
           xobj.send(null);
