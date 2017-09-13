@@ -452,7 +452,7 @@ class ScGasstationclient extends Polymer.Element {
     var now = 0;
 
     var x = setInterval(function() {
-      now = now+0.0001;
+      now = now + 0.0001;
       //audio.play();
       self.fillingbalance = now.toFixed(4);
 
@@ -479,7 +479,9 @@ class ScGasstationclient extends Polymer.Element {
 
     var txData = minimeInstance.approve.getData(this.getPriceResult.to, this.tokenamount);
 
-    minimeInstance.approve.estimateGas(this.getPriceResult.from, this.getPriceResult.to, this.tokenamount, {
+    this.web3.eth.estimateGas({
+      to: this.getPriceResult.to,
+      data: txData,
       from: self.address
     }, function(err, res) {
       if (err) {
@@ -511,7 +513,7 @@ class ScGasstationclient extends Polymer.Element {
         tx.sign(self.privatekey_buffer);
         var serializedTx = tx.serialize(); //.toString('hex');
 
-        var tx1 = '0x' + serializedTx.toString('hex');
+        var tx1 = EthJS.Util.addHexPrefix(serializedTx.toString('hex'));
 
         console.log('tx1');
         console.log(txParams);
@@ -545,7 +547,7 @@ class ScGasstationclient extends Polymer.Element {
         tx2.sign(self.privatekey_buffer);
         serializedTx = tx2.serialize();
 
-        var tx2 = '0x' + serializedTx.toString('hex');
+        var tx2 = EthJS.Util.addHexPrefix(serializedTx.toString('hex'));
 
         console.log('tx2');
         console.log(txParams);
@@ -568,8 +570,8 @@ class ScGasstationclient extends Polymer.Element {
         xhr.send(JSON.stringify(res));
 
 
+      });
     });
-        });
 
 
   }
