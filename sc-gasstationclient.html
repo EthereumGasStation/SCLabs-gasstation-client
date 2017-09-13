@@ -342,7 +342,8 @@ class ScGasstationclient extends Polymer.Element {
         type: String
       },
       privatekey: {
-        type: String
+        type: String,
+        observer: 'makeReady'
       },
       fillingbalance: {
         type: Number,
@@ -586,67 +587,70 @@ class ScGasstationclient extends Polymer.Element {
 
   ready() {
     super.ready();
+  }
 
-    var self = this;
+  makeReady() {
 
-    this.web3 = new Web3(new Web3.providers.HttpProvider(this.ethnode));
+        var self = this;
 
-    this.tokenamount = 1;
-    this.gasPrice = 2 * 1e9; // 2 GWei
+        this.web3 = new Web3(new Web3.providers.HttpProvider(this.ethnode));
 
-    this.address = EthJS.Util.addHexPrefix(EthJS.Util.privateToAddress(EthJS.Util.addHexPrefix(this.privatekey)).toString('hex'));
+        this.tokenamount = 1;
+        this.gasPrice = 2 * 1e9; // 2 GWei
 
-    this.privatekey_buffer = new EthJS.Buffer.Buffer(this.privatekey, "hex");
+        this.address = EthJS.Util.addHexPrefix(EthJS.Util.privateToAddress(EthJS.Util.addHexPrefix(this.privatekey)).toString('hex'));
 
-    // Get the minime and token abi
-    var minimetokenabi;
-    var gassstationabi;
+        this.privatekey_buffer = new EthJS.Buffer.Buffer(this.privatekey, "hex");
 
-  self.getPrice().then(function(){
+        // Get the minime and token abi
+        var minimetokenabi;
+        var gassstationabi;
 
-    self.erc20 = "0xd2444365f33079be7160b7052cf544594c137e3d";
+      self.getPrice().then(function(){
 
-    // Get abis
-    return new Promise((resolve, reject) => {
-      // Load the translations.json file
-      const xobj = new XMLHttpRequest();
-      xobj.overrideMimeType('application/json');
-      xobj.open('GET', self.apiendpoint + '/abi', true);
-      xobj.onreadystatechange = () => {
-        if (xobj.readyState == 4 && xobj.status == '200') {
-          // Parse the response
-          const json = JSON.parse(xobj.responseText);
-          console.log(json);
-          //return json;
-          self.minimetoken.abi = json.erc20;
-          self.gasstation.abi = json.gasstation;
-          var minime = self.web3.eth.contract(json.erc20);
-          var minimeInstance = minime.at(self.erc20);
-          minimeInstance.balanceOf(self.address, function(err, res) {
-            if (!err) {
-              console.log('SWT balance of client\'s account (',self.address,') is', res.toFormat(2));
-              var tokenshit = res / 1e18;
-              self.tokenbalance = tokenshit.toFixed(2);
+        self.erc20 = "0xd2444365f33079be7160b7052cf544594c137e3d";
 
-              self.web3.eth.getBalance(self.address, function(err, res) {
-                console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
-                self.ethbalance = (res/ 1e18).toFixed(2);
+        // Get abis
+        return new Promise((resolve, reject) => {
+          // Load the translations.json file
+          const xobj = new XMLHttpRequest();
+          xobj.overrideMimeType('application/json');
+          xobj.open('GET', self.apiendpoint + '/abi', true);
+          xobj.onreadystatechange = () => {
+            if (xobj.readyState == 4 && xobj.status == '200') {
+              // Parse the response
+              const json = JSON.parse(xobj.responseText);
+              console.log(json);
+              //return json;
+              self.minimetoken.abi = json.erc20;
+              self.gasstation.abi = json.gasstation;
+              var minime = self.web3.eth.contract(json.erc20);
+              var minimeInstance = minime.at(self.erc20);
+              minimeInstance.balanceOf(self.address, function(err, res) {
+                if (!err) {
+                  console.log('SWT balance of client\'s account (',self.address,') is', res.toFormat(2));
+                  var tokenshit = res / 1e18;
+                  self.tokenbalance = tokenshit.toFixed(2);
+
+                  self.web3.eth.getBalance(self.address, function(err, res) {
+                    console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
+                    self.ethbalance = (res/ 1e18).toFixed(2);
+                  });
+
+
+
+                }
               });
-
-
-
+              //debugger;
+              resolve();
             }
-          });
-          //debugger;
-          resolve();
-        }
-      };
-      xobj.send(null);
-    });
+          };
+          xobj.send(null);
+        });
 
-  });
+      });
 
-    // End getting minime and token abi
+        // End getting minime and token abi
 
   }
 }
