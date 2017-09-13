@@ -9,7 +9,7 @@
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-pages/iron-pages.html">
 <link rel="import" href="../iron-selector/iron-selector.html">
-<!-- <link rel="import" href="./shared-styles.html"> -->
+<link rel="import" href="./shared-styles.html">
 
 <dom-module id="sc-gasstationclient">
   <template>
@@ -176,7 +176,7 @@
     <div class="container">
       <div class="vertical">
         <div class="big">
-          <img src="../images/gasstation.png" />
+          <img src="./images/gasstation.png" />
         </div>
         <h1>Gas Station</h1>
       </div>
@@ -475,10 +475,8 @@ class ScGasstationclient extends Polymer.Element {
 
     console.log('sending approval for ', this.tokenamount, 'to', this.getPriceResult.to);
 
-    var txData = minimeInstance.approve.getData(this.getPriceResult.to, this.tokenamount, function(a, b) {
-      //debugger;
-    });
-  
+    var txData = minimeInstance.approve.getData(this.getPriceResult.to, this.tokenamount);
+
     minimeInstance.approve.estimateGas(this.getPriceResult.from, this.getPriceResult.to, this.tokenamount, {
       from: self.address
     }, function(err, res) {
@@ -570,7 +568,7 @@ class ScGasstationclient extends Polymer.Element {
 
     });
         });
-    
+
 
   }
 
@@ -635,7 +633,7 @@ class ScGasstationclient extends Polymer.Element {
                 self.ethbalance = (res/ 1e18).toFixed(2);
               });
 
-            
+
 
             }
           });
