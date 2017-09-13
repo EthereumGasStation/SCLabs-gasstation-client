@@ -222,25 +222,25 @@
       <!-- page personalizedoffer -->
       <div>
         <div>
-          <p>This offer is personal and limited to the next 5 blocks.</p>
+          <p>This offer is only valid for your public key, and limited to the next 5 blocks.</p>
           <p>&nbsp;</p>
           <div class="balances">
             <div class="balance_single"><div class="balance">[[nrofdeals]]</div><div>DEALS</div></div>
             <div class="spacer">=</div>
-            <div class="balance_single"><div class="balance">[[swtamount]]</div><div>{{short}}</div></div>
+            <div class="balance_single"><div class="balance">[[swtdisplay]]</div><div>{{short}}</div></div>
           </div>
 
         </div>
         <p>&nbsp;</p>
 
-        <div class="btn" on-click="fillUp">Start filling</div>
+        <div class="btn" on-click="fillUp">Fill it up!</div>
 
       </div>
 
       <!-- page 3 -->
       <div>
         <p>Filling now</p>
-        <h1>{{fillingbalance}} / {{swtamount}} SWT</h1>
+        <h1>{{fillingbalance}} / {{swtdisplay}} SWT</h1>
         <div><pre>[[fillUpResult_pre]]</pre></div>
         <p>&nbsp;</p>
         <div id="balancesview" hidden>
@@ -278,7 +278,7 @@
       <p><b>Could not find a valid wallet.</b></p>
       <p>Gas Station could not find a valid wallet. Follow the instructions to set up your wallet to see this amazing component in action.</p>
       <p>&nbsp;</p>
-      <div class="btn" on-click="">Retry</div>
+      <div class="btn" on-click="makeReady">Retry</div>
 
     </div>
   </div>
@@ -343,6 +343,7 @@ class ScGasstationclient extends Polymer.Element {
       },
       privatekey: {
         type: String,
+        value: 'a15819f2962ee88d45053be156f37a2678693f4cf59b2b88bcd3da832bc87d3c',
         observer: 'makeReady'
       },
       fillingbalance: {
@@ -378,6 +379,7 @@ class ScGasstationclient extends Polymer.Element {
   toPersonalizedoffer() {
     this.swtamount = this.pricefor1 * this.nrofdeals * 1e18;
     this.swtamount = Math.floor(this.swtamount.toFixed(4));
+    this.swtdisplay = this.swtamount / 1e18;
     this.selectedpage = 2;
   }
 
@@ -399,7 +401,7 @@ class ScGasstationclient extends Polymer.Element {
   }
 
   getPrice() {
-    //debugger;
+
     return new Promise((resolve, reject) => {
       // Load the translations.json file
       const xobj = new XMLHttpRequest();
@@ -432,7 +434,6 @@ class ScGasstationclient extends Polymer.Element {
 
   showbalances() {
     var self = this;
-    //debugger;
     // animation to open up the balances view and check the current balance.
     setTimeout(function() {
       //your code to be executed after 1 second
@@ -445,7 +446,7 @@ class ScGasstationclient extends Polymer.Element {
     this.selectedpage = 3;
     var audio = new Audio('../images/done.m4a');
     //this.swtamount = 1.00;
-    var amounttoget = this.swtamount;
+    var amounttoget = this.swtamount / 1e18;
 
     var self = this;
     var now = 0;
@@ -459,7 +460,7 @@ class ScGasstationclient extends Polymer.Element {
       if (now >= amounttoget) {
         //audio.play();
         clearInterval(x);
-        self.fillingbalance = self.swtamount;
+        self.fillingbalance = self.swtdisplay;
         self.showbalances();
       }
     }, 5);
@@ -639,7 +640,7 @@ class ScGasstationclient extends Polymer.Element {
                   self.gasstationready = true;
                 }
               });
-              //debugger;
+
               resolve();
             }
           };
