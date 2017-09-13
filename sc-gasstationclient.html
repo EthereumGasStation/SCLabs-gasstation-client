@@ -312,7 +312,7 @@ class ScGasstationclient extends Polymer.Element {
       },
       gasstationready: {
         type: Boolean,
-        value: true
+        value: false
       },
       project: {
         type: String,
@@ -476,7 +476,7 @@ class ScGasstationclient extends Polymer.Element {
     console.log('sending approval for ', this.tokenamount, 'to', this.getPriceResult.to);
 
     var txData = minimeInstance.approve.getData(this.getPriceResult.to, this.tokenamount);
-  
+
     minimeInstance.approve.estimateGas(this.getPriceResult.from, this.getPriceResult.to, this.tokenamount, {
       from: self.address
     }, function(err, res) {
