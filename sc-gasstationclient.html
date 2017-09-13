@@ -606,7 +606,7 @@ class ScGasstationclient extends Polymer.Element {
         var minimetokenabi;
         var gassstationabi;
 
-      self.getPrice().then(function(){
+        self.getPrice().then(function(){
 
         self.erc20 = "0xd2444365f33079be7160b7052cf544594c137e3d";
 
@@ -636,14 +636,11 @@ class ScGasstationclient extends Polymer.Element {
                     console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
                     self.ethbalance = (res/ 1e18).toFixed(2);
                   });
-
-
-
+                  self.gasstationready = true;
                 }
               });
               //debugger;
               resolve();
-              self.gasstationready = true;
             }
           };
           xobj.send(null);
