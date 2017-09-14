@@ -67,6 +67,12 @@
     background: url('./images/swarm-city-sprite.png') -60px -84px;
     cursor: pointer;
   }
+  .refresh {
+        width: 54px;
+        height: 54px;
+        background: url('../../../images/SwarmCIty-Sprite-normal.png') -162px -54px;
+        cursor: pointer;
+  }
   .big {
     width: 80px;
     height: 80px;
@@ -231,8 +237,9 @@
           <div class="balances">
             <div class="balance_single"><div class="balance">[[swtdisplay]]</div><div>{{short}}</div></div>
             <div class="spacer">=</div>
-            <div class="balance_single"><div class="balance">[[nrofdeals]]</div><div>DEALS</div></div>
-
+            <!-- <div class="balance_single"><div class="balance">[[nrofdeals]]</div><div>DEALS</div></div>
+            <div class="spacer">=</div> -->
+            <div class="balance_single"><div class="balance">[[weiamount]]</div><div>ETH</div></div>
           </div>
 
         </div>
@@ -247,14 +254,17 @@
         <p>Filling now</p>
         <h1>{{fillingbalance}} / {{swtdisplay}} SWT</h1>
         <div><pre>[[fillUpResult_pre]]</pre></div>
-        <p>&nbsp;</p>
         <div id="balancesview" hidden>
-          ICON REFRESH
+          <p>&nbsp;</p>
           <div class="balances">
             <div class="balance_single"><div class="balance">[[ethbalance]]</div><div>ETH</div></div>
             <div class="spacer"></div>
             <div class="balance_single"><div class="balance">[[tokenbalance]]</div><div>{{short}}</div></div>
           </div>
+          <div class="balances">
+            <div class="refresh" on-click="getBalances"></div>
+          </div>
+          <p>&nbsp;</p>
           <div class="btn" on-click="toEnd">Continue</div>
         </div>
       </div>
@@ -293,7 +303,7 @@
       <p><b>Could not find a valid wallet.</b></p>
       <p>Gas Station could not find a valid wallet. Follow the instructions to set up your wallet to see this amazing component in action.</p>
       <p>&nbsp;</p>
-      <div class="btn" on-click="makeReady">Retry</div>
+      <div class="refresh" on-click="makeReady"></div>
     </div>
   </div>
 </template>
@@ -394,6 +404,8 @@ class ScGasstationclient extends Polymer.Element {
     this.swtamount = this.pricefor1 * this.nrofdeals * 1e18;
     this.swtamount = Math.floor(this.swtamount.toFixed(4));
     this.swtdisplay = this.swtamount / 1e18;
+    this.weiamount = ((this.weineeded * this.nrofdeals) / 1e18).toFixed(4);
+
     this.selectedpage = 2;
   }
 
@@ -430,7 +442,6 @@ class ScGasstationclient extends Polymer.Element {
           this.getPriceResult_pre = JSON.stringify(json, null, 2);
           // this.currentprice = wei for 1 swt
           this.currentprice = this.getPriceResult.price;
-
           this.weineeded = 200000 * 2 * 1e9;
           this.swtneeded = this.weineeded / this.currentprice;
           this.pricefor1 = this.swtneeded.toFixed(4);
@@ -442,6 +453,26 @@ class ScGasstationclient extends Polymer.Element {
         }
       };
       xobj.send(null);
+    });
+  }
+
+  getBalances() {
+    // Get the current SWT and ETH balances
+    var self = this;
+    var minime = this.web3.eth.contract(this.minimetoken.abi);
+    var minimeInstance = minime.at(this.erc20);
+    minimeInstance.balanceOf(this.address, function(err, res) {
+      if (!err) {
+        console.log('SWT balance of client\'s account (',self.address,') is', res.toFormat(2));
+        var tokenshit = res / 1e18;
+        self.tokenbalance = tokenshit.toFixed(2);
+
+        self.web3.eth.getBalance(self.address, function(err, res) {
+          console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
+          self.ethbalance = (res/ 1e18).toFixed(2);
+        });
+        //self.gasstationready = true;
+      }
     });
   }
 
