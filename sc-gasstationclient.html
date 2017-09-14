@@ -97,18 +97,15 @@
     @apply --body-default;
     text-align: center;
   }
-
   div {
     @apply --body-default;
     text-align: center;
   }
-
   .balance {
     @apply --body-default-wide;
     font-size: 26px;
     margin-bottom: 5px;
   }
-
   .btn {
     @apply --small-light;
     text-align: center;
@@ -133,8 +130,6 @@
     font-weight: bold;
     text-align: center;
   }
-
-
   .gasbtn {
     @apply --small-light;
     text-align: center;
@@ -159,14 +154,13 @@
     font-weight: bold;
     text-align: center;
   }
-
+  .forswt {
+    font-weight: lighter;
+  }
   #selector > .iron-selected {
     background-color: var(--sc-blue);
     color: var(--sc-white);
   }
-
-
-
   </style>
   <template is="dom-if" if="{{gasstationready}}">
 
@@ -189,9 +183,9 @@
           <div class="address">[[address]]</div>
           <p>&nbsp;</p>
           <div class="balances">
-            <div class="balance_single"><div class="balance">[[ethbalance]]</div><div>ETH</div></div>
-            <div class="spacer"></div>
             <div class="balance_single"><div class="balance">[[tokenbalance]]</div><div>{{short}}</div></div>
+            <div class="spacer"></div>
+            <div class="balance_single"><div class="balance">[[ethbalance]]</div><div>ETH</div></div>
           </div>
           <div class="btn" on-click="toStation">Get more gas</div>
         </div>
@@ -206,10 +200,10 @@
             attr-for-selected="name"
             on-iron-select="doSomething"
             selected-item="{{selecteditem}}">
-              <div class="gasbtn" name="1">1</div>
-              <div class="gasbtn" name="10">10</div>
-              <div class="gasbtn" name="20">20</div>
-              <div class="gasbtn" name="50">50</div>
+              <div class="gasbtn" name="1">1 &nbsp;<span class="forswt">for {{formatbalance(pricefor1)}} {{short}}</span></div>
+              <div class="gasbtn" name="10">10&nbsp;<span class="forswt">for {{formatbalance(pricefor10)}} {{short}}</span></div>
+              <div class="gasbtn" name="20">20&nbsp;<span class="forswt">for {{formatbalance(pricefor20)}} {{short}}</span></div>
+              <div class="gasbtn" name="50">50&nbsp;<span class="forswt">for {{formatbalance(pricefor50)}} {{short}}</span></div>
             </iron-selector>
           </div>
         <div class="btn" on-click="toPersonalizedoffer">Continue ></div>
@@ -225,9 +219,10 @@
           <p>This offer is only valid for your public key, and limited to the next 5 blocks.</p>
           <p>&nbsp;</p>
           <div class="balances">
-            <div class="balance_single"><div class="balance">[[nrofdeals]]</div><div>DEALS</div></div>
-            <div class="spacer">=</div>
             <div class="balance_single"><div class="balance">[[swtdisplay]]</div><div>{{short}}</div></div>
+            <div class="spacer">=</div>
+            <div class="balance_single"><div class="balance">[[nrofdeals]]</div><div>DEALS</div></div>
+
           </div>
 
         </div>
@@ -244,6 +239,7 @@
         <div><pre>[[fillUpResult_pre]]</pre></div>
         <p>&nbsp;</p>
         <div id="balancesview" hidden>
+          ICON REFRESH
           <div class="balances">
             <div class="balance_single"><div class="balance">[[ethbalance]]</div><div>ETH</div></div>
             <div class="spacer"></div>
@@ -256,11 +252,20 @@
       <!-- page 4 -->
       <div>
         <h1>Set up automatic refills</h1>
-        <p>If you want, your gas balance can be automatically refilled when needed.</p>
+        <p>Your gas balance can be automatically refilled when needed.</p>
         <p>&nbsp;</p>
         <input type="checkbox" name="autofill" value=""> Automatically fill up my gas tank
         <p>&nbsp;</p>
         <div class="btn" on-click="exitStation">Exit Gas Station</div>
+      </div>
+
+      <!-- Page 5: found private key, doing stuff with it. -->
+      <div>
+        <h1>Found a keypair.</h1>
+        <p>Trying to get your account working now...</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <div class="btn" on-click="makeReady">Retry</div>
       </div>
     </iron-pages>
   </div>
@@ -279,7 +284,6 @@
       <p>Gas Station could not find a valid wallet. Follow the instructions to set up your wallet to see this amazing component in action.</p>
       <p>&nbsp;</p>
       <div class="btn" on-click="makeReady">Retry</div>
-
     </div>
   </div>
 </template>
@@ -381,7 +385,9 @@ class ScGasstationclient extends Polymer.Element {
     var self = this;
 
     var data = {
-      take: this.pricefor1
+      take: this.amountswtpertx , //* this.selecteditem,
+      from : this.address,
+      tokenaddress: this.erc20,
     };
 
     // send the TX to the backend
@@ -437,23 +443,27 @@ class ScGasstationclient extends Polymer.Element {
           this.currentprice = this.getPriceResult.price;
           this.gasPrice = this.getPriceResult.gasprice;
 
-//          this.weineeded = 200000 * this.gasPrice;
+          this.weineeded = 200000 * this.gasPrice;
 
-          this.amountswtpertx = Math.ceil(weineeded * 1e18 / this.currentprice);
+          this.amountswtpertx = Math.ceil(this.weineeded * 1e18 / this.currentprice);
           
           //this.swtneeded = this.weineeded / this.currentprice;
-          this.pricefor1 = this.amountswtpertx;
-          this.pricefor10 = this.amountswtpertx * 10;
-          this.pricefor20 = this.amountswtpertx * 20;
-          this.pricefor50 = this.amountswtpertx * 50;
-          this.pricefor100 = this.amountswtpertx * 100;
-
+          this.pricefor1 = this.amountswtpertx / 1e18;
+          this.pricefor10 = this.amountswtpertx * 10 / 1e18;
+          this.pricefor20 = this.amountswtpertx * 20 / 1e18;
+          this.pricefor50 = this.amountswtpertx * 50 / 1e18;
+          this.pricefor100 = this.amountswtpertx * 100 / 1e18;
+//debugger;
           this.showfill = true;
           resolve();
         }
       };
       xobj.send(null);
     });
+  }
+
+  formatbalance(b){
+    return(b.toFixed(2));
   }
 
   showbalances() {
