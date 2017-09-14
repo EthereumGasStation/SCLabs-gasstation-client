@@ -377,10 +377,30 @@ class ScGasstationclient extends Polymer.Element {
   }
 
   toPersonalizedoffer() {
-    this.swtamount = this.pricefor1 * this.nrofdeals * 1e18;
-    this.swtamount = Math.floor(this.swtamount.toFixed(4));
-    this.swtdisplay = this.swtamount / 1e18;
-    this.selectedpage = 2;
+
+    var self = this;
+
+    var data = {
+      take: this.pricefor1
+    };
+
+    // send the TX to the backend
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", self.apiendpoint + '/sign', true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+        console.log(xhr);
+        const json = JSON.parse(xhr.responseText);
+
+        self.swtamount = self.pricefor1 * self.nrofdeals * 1e18;
+        self.swtamount = Math.floor(self.swtamount.toFixed(4));
+        self.swtdisplay = self.swtamount / 1e18;
+        self.selectedpage = 2;
+
+      }
+    }
+    xhr.send(JSON.stringify(data));
   }
 
   toEnd() {
@@ -415,14 +435,18 @@ class ScGasstationclient extends Polymer.Element {
           this.getPriceResult_pre = JSON.stringify(json, null, 2);
           // this.currentprice = wei for 1 swt
           this.currentprice = this.getPriceResult.price;
+          this.gasPrice = this.getPriceResult.gasprice;
 
-          this.weineeded = 200000 * 2 * 1e9;
-          this.swtneeded = this.weineeded / this.currentprice;
-          this.pricefor1 = this.swtneeded.toFixed(4);
-          this.pricefor10 = this.pricefor1 * 10;
-          this.pricefor20 = this.pricefor1 * 20;
-          this.pricefor50 = this.pricefor1 * 50;
-          this.pricefor100 = this.pricefor1 * 100;
+//          this.weineeded = 200000 * this.gasPrice;
+
+          this.amountswtpertx = Math.ceil(weineeded * 1e18 / this.currentprice);
+          
+          //this.swtneeded = this.weineeded / this.currentprice;
+          this.pricefor1 = this.amountswtpertx;
+          this.pricefor10 = this.amountswtpertx * 10;
+          this.pricefor20 = this.amountswtpertx * 20;
+          this.pricefor50 = this.amountswtpertx * 50;
+          this.pricefor100 = this.amountswtpertx * 100;
 
           this.showfill = true;
           resolve();
@@ -487,6 +511,7 @@ class ScGasstationclient extends Polymer.Element {
       if (err) {
         console.log(err);
       }
+      console.log('gas required=',res,typeof res);
       var gasRequired = res;
 
       // get nonce
@@ -502,12 +527,14 @@ class ScGasstationclient extends Polymer.Element {
         var txParams = {
           nonce: nonce++,
           gasPrice: self.gasPrice,
-          gasLimit: gasRequired,
+          gasLimit: gasRequired + 50000,
           to: self.getPriceResult.token_address,
           from: self.address,
           data: txData,
           chainId: 1
-        }
+        };
+
+        console.log('TX1 params' , txParams);
 
         var tx = new EthJS.Tx(txParams);
         tx.sign(self.privatekey_buffer);
@@ -522,13 +549,25 @@ class ScGasstationclient extends Polymer.Element {
         var gasstation = self.web3.eth.contract(self.gasstation.abi);
         self.gasstationInstance = gasstation.at(self.getPriceResult.to);
 
+
+    minimeInstance.balanceOf(self.address, function(err, res) {
+      var pong = res/1e18;
+      console.log('my SWT balance is', pong.toFixed(18));
+      var tospend = self.swtamount * self.getPriceResult.price;
+      
+debugger;
+        console.log('I will send ', tospend.toFixed(18), ' SWT units to receive ' , self.swtamount - self.getPriceResult.upfront.toFixed(18) , ' ETH units');
+    });
+
+
+
         txData = self.gasstationInstance.fillup.getData(
           self.getPriceResult.token_address,
           self.getPriceResult.price,
           self.getPriceResult.valid_until,
           self.getPriceResult.random,
           self.getPriceResult.upfront,
-          1,
+          self.swtamount,
           self.getPriceResult.sig.v,
           self.getPriceResult.sig.r,
           self.getPriceResult.sig.s);
@@ -536,12 +575,12 @@ class ScGasstationclient extends Polymer.Element {
         txParams = {
           nonce: nonce++,
           gasPrice: self.gasPrice,
-          gasLimit: 1000000,
+          gasLimit: 200000,
           from: self.address,
           to: self.getPriceResult.to,
           data: txData,
           chainId: 1
-        }
+        };
 
         var tx2 = new EthJS.Tx(txParams);
         tx2.sign(self.privatekey_buffer);
