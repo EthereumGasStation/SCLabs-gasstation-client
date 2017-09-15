@@ -225,7 +225,7 @@
           <p>This offer is only valid for your public key, and limited to the next 5 blocks.</p>
           <p>&nbsp;</p>
           <div class="balances">
-            <div class="balance_single"><div class="balance">[[swtdisplay]]</div><div>{{short}}</div></div>
+            <div class="balance_single"><div class="balance">[[formatbalance(swtamount)]]</div><div>{{short}}</div></div>
             <div class="spacer">=</div>
             <!-- <div class="balance_single"><div class="balance">[[nrofdeals]]</div><div>DEALS</div></div>
             <div class="spacer">=</div> -->
@@ -396,7 +396,7 @@ class ScGasstationclient extends Polymer.Element {
     var self = this;
 
     var data = {
-      take: this.amountswtpertx , //* this.selecteditem,
+      take: this.weineeded * parseInt(this.selecteditem.attributes['name'].value),
       from : this.address,
       tokenaddress: this.erc20,
     };
@@ -410,12 +410,14 @@ class ScGasstationclient extends Polymer.Element {
         console.log(xhr);
         const json = JSON.parse(xhr.responseText);
 
-        self.swtamount = self.pricefor1 * self.nrofdeals * 1e18;
-        self.swtamount = Math.floor(self.swtamount.toFixed(4));
-        self.swtdisplay = self.swtamount / 1e18;
-        self.selectedpage = 2;
-         this.weiamount = ((this.weineeded * this.nrofdeals) / 1e18).toFixed(4);
+        self.signresult = json;
 
+        self.swtamount = json.give / 1e18; //self.signresult self.pricefor1 * self.nrofdeals;
+        //self.swtamount = Math.floor(self.swtamount.toFixed(4));
+        //self.swtdisplay = self.swtamount / 1e18;
+        self.selectedpage = 2;
+        self.weiamount = ((self.weineeded * self.nrofdeals) / 1e18).toFixed(4);
+//debugger;
       }
     }
     xhr.send(JSON.stringify(data));
@@ -431,8 +433,9 @@ class ScGasstationclient extends Polymer.Element {
   }
 
   doSomething() {
-    console.log('something was selected, ', this.selecteditem);
-    this.nrofdeals = this.selecteditem.innerHTML;
+    var x = this.selecteditem.getAttribute("name");
+    console.log('something was selected, ', x);
+    this.nrofdeals = x;
   }
 
   _close() {
@@ -457,7 +460,7 @@ class ScGasstationclient extends Polymer.Element {
 
           this.gasPrice = this.getPriceResult.gasprice;
 
-          this.weineeded = 200000 * this.gasPrice;
+          this.weineeded = 400000 * this.gasPrice;
 
           this.amountswtpertx = Math.ceil(this.weineeded * 1e18 / this.currentprice);
           
@@ -477,7 +480,8 @@ class ScGasstationclient extends Polymer.Element {
   }
 
   formatbalance(b){
-    return(b.toFixed(2));
+    if (!b || b <= 0) return 0;
+    return(b.toFixed(4));
   }
 
   getBalances() {
@@ -489,11 +493,11 @@ class ScGasstationclient extends Polymer.Element {
       if (!err) {
         console.log('SWT balance of client\'s account (',self.address,') is', res.toFormat(2));
         var tokenshit = res / 1e18;
-        self.tokenbalance = tokenshit.toFixed(2);
+        self.tokenbalance = tokenshit.toFixed(4);
 
         self.web3.eth.getBalance(self.address, function(err, res) {
           console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
-          self.ethbalance = (res/ 1e18).toFixed(2);
+          self.ethbalance = (res/ 1e18).toFixed(4);
         });
         //self.gasstationready = true;
       }
@@ -536,19 +540,19 @@ class ScGasstationclient extends Polymer.Element {
 
 
     var minime = this.web3.eth.contract(this.minimetoken.abi);
-    var minimeInstance = minime.at(this.getPriceResult.token_address);
+    var minimeInstance = minime.at(this.signresult.token_address);
 
     // minimeInstance.balanceOf(this.address, function(err, res) {
     //   console.log('SWT balance is', res.toFormat(2));
     //   self.tokenbalance = res;
     // });
 
-    console.log('sending approval for ', this.tokenamount, 'to', this.getPriceResult.to);
+    console.log('sending approval for ', this.signresult.give , 'to', this.signresult.to);
 
-    var txData = minimeInstance.approve.getData(this.getPriceResult.to, this.tokenamount);
+    var txData = minimeInstance.approve.getData(this.signresult.to, this.signresult.give);
 
     this.web3.eth.estimateGas({
-      to: this.getPriceResult.to,
+      to: this.signresult.to,
       data: txData,
       from: self.address
     }, function(err, res) {
@@ -572,7 +576,7 @@ class ScGasstationclient extends Polymer.Element {
           nonce: nonce++,
           gasPrice: self.gasPrice,
           gasLimit: gasRequired + 50000,
-          to: self.getPriceResult.token_address,
+          to: self.signresult.token_address,
           from: self.address,
           data: txData,
           chainId: 1
@@ -591,37 +595,33 @@ class ScGasstationclient extends Polymer.Element {
         console.log(tx1);
 
         var gasstation = self.web3.eth.contract(self.gasstation.abi);
-        self.gasstationInstance = gasstation.at(self.getPriceResult.to);
+        self.gasstationInstance = gasstation.at(self.signresult.to);
 
 
     minimeInstance.balanceOf(self.address, function(err, res) {
       var pong = res/1e18;
       console.log('my SWT balance is', pong.toFixed(18));
-      var tospend = self.swtamount * self.getPriceResult.price;
+      //var tospend = self.swtamount * self.signresult.price;
       
-debugger;
-        console.log('I will send ', tospend.toFixed(18), ' SWT units to receive ' , self.swtamount - self.getPriceResult.upfront.toFixed(18) , ' ETH units');
+        console.log('I will send ', self.signresult.give, ' SWT units to receive ' , self.signresult.take , ' ETH units');
     });
 
-
-
         txData = self.gasstationInstance.fillup.getData(
-          self.getPriceResult.token_address,
-          self.getPriceResult.price,
-          self.getPriceResult.valid_until,
-          self.getPriceResult.random,
-          self.getPriceResult.upfront,
-          self.swtamount,
-          self.getPriceResult.sig.v,
-          self.getPriceResult.sig.r,
-          self.getPriceResult.sig.s);
-
+          self.signresult.token_address,
+          self.signresult.valid_until,
+          self.signresult.random,
+          self.signresult.take,
+          self.signresult.give,
+          self.signresult.sig.v,
+          self.signresult.sig.r,
+          self.signresult.sig.s);
+//debugger;
         txParams = {
           nonce: nonce++,
           gasPrice: self.gasPrice,
           gasLimit: 200000,
           from: self.address,
-          to: self.getPriceResult.to,
+          to: self.signresult.to,
           data: txData,
           chainId: 1
         };
@@ -681,8 +681,8 @@ debugger;
 
         this.web3 = new Web3(new Web3.providers.HttpProvider(this.ethnode));
 
-        this.tokenamount = 1;
-        this.gasPrice = 2 * 1e9; // 2 GWei
+        // this.tokenamount = 1;
+        // this.gasPrice = 2 * 1e9; // 2 GWei
 
         this.address = EthJS.Util.addHexPrefix(EthJS.Util.privateToAddress(EthJS.Util.addHexPrefix(this.privatekey)).toString('hex'));
 
