@@ -70,7 +70,7 @@
   .refresh {
         width: 54px;
         height: 54px;
-        background: url('../../../images/SwarmCIty-Sprite-normal.png') -162px -54px;
+        background: url('./images/SwarmCity-Sprite-normal.png') -162px -54px;
         cursor: pointer;
   }
   .big {
@@ -192,6 +192,9 @@
             <div class="balance_single"><div class="balance">[[tokenbalance]]</div><div>{{short}}</div></div>
             <div class="spacer"></div>
             <div class="balance_single"><div class="balance">[[ethbalance]]</div><div>ETH</div></div>
+          </div>
+          <div class="balances">
+            <div class="refresh" on-click="getBalances"></div>
           </div>
           <div class="btn" on-click="toStation">Get more gas</div>
         </div>
