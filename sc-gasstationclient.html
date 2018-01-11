@@ -196,11 +196,11 @@
           <div class="balances">
             <div class="refresh" on-click="getBalances"></div>
           </div>
-          <div class="btn" on-click="toStation">Get more gas</div>
+          <div class="btn" on-click="fillUp">Get more gas</div>
         </div>
 
         <!-- page 1 -->
-        <div>
+        <!-- <div>
           <p>How many deals would you like to do?</p>
           <p>&nbsp;</p>
           <div>
@@ -215,7 +215,7 @@
               <div class="gasbtn" name="50">50&nbsp;<span class="forswt">for {{formatbalance(pricefor50)}} {{short}}</span></div>
             </iron-selector>
           </div>
-        <div class="btn" on-click="toPersonalizedoffer">Continue ></div>
+        <div class="btn" on-click="toPersonalizedoffer">Continue ></div> -->
 
         <!-- <h1>Our best offer:</h1>
         <div><pre>[[getPriceResult_pre]]</pre></div> -->
@@ -466,7 +466,7 @@ class ScGasstationclient extends Polymer.Element {
           this.weineeded = 400000 * this.gasPrice;
 
           this.amountswtpertx = Math.ceil(this.weineeded * 1e18 / this.currentprice);
-          
+
           //this.swtneeded = this.weineeded / this.currentprice;
           this.pricefor1 = this.amountswtpertx / 1e18;
           this.pricefor10 = this.amountswtpertx * 10 / 1e18;
@@ -605,7 +605,7 @@ class ScGasstationclient extends Polymer.Element {
       var pong = res/1e18;
       console.log('my SWT balance is', pong.toFixed(18));
       //var tospend = self.swtamount * self.signresult.price;
-      
+
         console.log('I will send ', self.signresult.give, ' SWT units to receive ' , self.signresult.take , ' ETH units');
     });
 
@@ -655,11 +655,8 @@ class ScGasstationclient extends Polymer.Element {
         }
         xhr.send(JSON.stringify(res));
 
-
       });
     });
-
-
   }
 
   gettankbalance() {
