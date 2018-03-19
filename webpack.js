@@ -1,3 +1,5 @@
-import {
-	privateToAddress
-} from 'ethereumgasstation/lib/gasstationlib.js';
+import 
+	gasstationlib
+from 'ethereumgasstation/lib/gasstationlib.js';
+
+export { gasstationlib }

@@ -4,7 +4,7 @@
 <script src="./utility.js"></script>
 <!-- <script src="keythereum.js"></script> -->
 <script src="../web3/dist/web3.min.js"></script>
-<script src="../ethereumgasstation/lib/build/gasstationlib-browser.js"></script>
+<script src="/webpack.min.js"></script>
 
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-pages/iron-pages.html">
@@ -680,7 +680,80 @@ class ScGasstationclient extends Polymer.Element {
 
         this.web3 = new Web3(new Web3.providers.HttpProvider(this.ethnode));
 
-        var gsLib = require('gasstationlib');
+        let gasstationlib = webpack.gasstationlib({
+          currentProvider: this.web3.currentProvider
+        });
+
+        let privateKey = '12ed1823ef1c2702b69d44aae3e4beeab8ac3b3d8668e41edbc42e871f1933b2';
+
+        // example getting pubkey from private key
+        let pubKey = gasstationlib.privateToAddress(privateKey);
+
+        // SWT token address
+        let tokenAddress = "0xb9e7f8568e08d5659f5d29c4997173d84cdf2607";
+
+        // the gasstation (this is a dummy address)
+        let gasStationAddress = "0xb015d1120b9c6333f6a9f38646309beb266b3943";
+
+        // now query the price from the API ( TODO )
+        // with the paremeter :
+        // 1. I need 1000000000 gas
+        // 2. This is the Token I want to give ( ticker : 'swarm-city')
+        // 3. This is the address where to receive the gas (and where tokens are)
+        // the API will return these parameters :
+        let _tokensGive = 1 // amount of tokens i need to give
+        let _gasOffer = 1000000000 // amount of gas you will get in return
+        let _validUntil = 5000000 // this offer is valid until this block nr.
+
+
+
+        // client signs off on these parameters
+        let clientSig = gasstationlib.signGastankParameters(
+          tokenAddress,
+          gasStationAddress,
+          1,  // tokens to give
+          _gasOffer,
+          _validUntil,
+          privateKey);
+        console.log('------Client Signature-----');
+        console.log(clientSig);
+        console.log('-----/Client Signature-----');
+
+        gasstationlib.getapprovaltx(
+          pubKey,
+          privateKey,
+          tokenAddress,
+          1,    // approval for how many SWT units ?
+          gasStationAddress
+        ).then((approvalTx) => {
+          console.log('------Approval Signature-----');
+          console.log('approvalTx=', approvalTx);
+          console.log('-----/Approval Signature-----');
+
+
+
+          // now you need to send off these 2 things back to the API:
+          let gasOrderConfirmation = {
+            approval: approvalTx,
+            clientsig: clientSig,
+          };
+
+          // POST /gasorder
+          // + gasOrderConfirmation
+          console.log('------Send this to API -----');
+          console.log(gasOrderConfirmation);
+          console.log('-----/Send this to API -----');
+
+          // and now the API will do its thing... just wait for the 
+          // gas to appear...
+
+
+        });
+
+
+
+
+        //var gsLib = require('gasstationlib');
 
         // this.tokenamount = 1;
         // this.gasPrice = 2 * 1e9; // 2 GWei
@@ -689,51 +762,51 @@ class ScGasstationclient extends Polymer.Element {
 
         //this.privatekey_buffer = new ethereumjs.Buffer.Buffer(this.privatekey, "hex");
 
-        // Get the minime and token abi
-        var minimetokenabi;
-        var gassstationabi;
+      //   // Get the minime and token abi
+      //   var minimetokenabi;
+      //   var gassstationabi;
 
-        self.getPrice().then(function(){
+      //   self.getPrice().then(function(){
 
-        //self.erc20 = "0xd2444365f33079be7160b7052cf544594c137e3d";
+      //   //self.erc20 = "0xd2444365f33079be7160b7052cf544594c137e3d";
 
-        // Get abis
-        return new Promise((resolve, reject) => {
-          // Load the translations.json file
-          const xobj = new XMLHttpRequest();
-          xobj.overrideMimeType('application/json');
-          xobj.open('GET', self.apiendpoint + '/abi', true);
-          xobj.onreadystatechange = () => {
-            if (xobj.readyState == 4 && xobj.status == '200') {
-              // Parse the response
-              const json = JSON.parse(xobj.responseText);
-              console.log(json);
-              //return json;
-              self.minimetoken.abi = json.erc20;
-              self.gasstation.abi = json.gasstation;
-              var minime = self.web3.eth.contract(json.erc20);
-              var minimeInstance = minime.at(self.erc20);
-              minimeInstance.balanceOf(self.address, function(err, res) {
-                if (!err) {
-                  console.log('SWT balance of client\'s account (',self.address,') is', res.toFormat(2));
-                  var tokenshit = res / 1e18;
-                  self.tokenbalance = tokenshit.toFixed(2);
+      //   // Get abis
+      //   return new Promise((resolve, reject) => {
+      //     // Load the translations.json file
+      //     const xobj = new XMLHttpRequest();
+      //     xobj.overrideMimeType('application/json');
+      //     xobj.open('GET', self.apiendpoint + '/abi', true);
+      //     xobj.onreadystatechange = () => {
+      //       if (xobj.readyState == 4 && xobj.status == '200') {
+      //         // Parse the response
+      //         const json = JSON.parse(xobj.responseText);
+      //         console.log(json);
+      //         //return json;
+      //         self.minimetoken.abi = json.erc20;
+      //         self.gasstation.abi = json.gasstation;
+      //         var minime = self.web3.eth.contract(json.erc20);
+      //         var minimeInstance = minime.at(self.erc20);
+      //         minimeInstance.balanceOf(self.address, function(err, res) {
+      //           if (!err) {
+      //             console.log('SWT balance of client\'s account (',self.address,') is', res.toFormat(2));
+      //             var tokenshit = res / 1e18;
+      //             self.tokenbalance = tokenshit.toFixed(2);
 
-                  self.web3.eth.getBalance(self.address, function(err, res) {
-                    console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
-                    self.ethbalance = (res/ 1e18).toFixed(2);
-                  });
-                  self.gasstationready = true;
-                }
-              });
+      //             self.web3.eth.getBalance(self.address, function(err, res) {
+      //               console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
+      //               self.ethbalance = (res/ 1e18).toFixed(2);
+      //             });
+      //             self.gasstationready = true;
+      //           }
+      //         });
 
-              resolve();
-            }
-          };
-          xobj.send(null);
-        });
+      //         resolve();
+      //       }
+      //     };
+      //     xobj.send(null);
+      //   });
 
-      });
+      // });
 
         // End getting minime and token abi
 
