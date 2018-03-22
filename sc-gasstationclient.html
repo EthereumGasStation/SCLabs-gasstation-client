@@ -5,7 +5,7 @@
 <!-- <script src="keythereum.js"></script> -->
 <script src="../web3/dist/web3.min.js"></script>
 <script src="../ethereumgasstation/lib/build/gasstationlib-browser.js"></script>
-
+<script src="./webpack.min.js"></script>
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-pages/iron-pages.html">
 <link rel="import" href="../iron-selector/iron-selector.html">
@@ -112,6 +112,10 @@
       font-size: 26px;
       margin-bottom: 5px;
     }
+    .error {
+      color: var(--sc-red);
+      font-weight: bold;
+    }
     .btn {
       @apply --small-light;
       text-align: center;
@@ -183,12 +187,16 @@
         <iron-pages selected="{{selectedpage}}">
           <!-- page 0 -->
           <div>
-            <div>For every transaction, a small fee called "gas" is paid to the miners who make sure the blockchain is running perfectly. In order to send a token from one address to another, a little bit of gas is needed. Pay for Gas with your tokens.</div>
+            <!-- <div>For every transaction, a small fee called "gas" is paid to the miners who make sure the blockchain is running perfectly. In order to send a token from one address to another, a little bit of gas is needed. Pay for Gas with your tokens.</div> -->
             <div>&nbsp;</div>
 
-            <code>Profit margin: +{{uplift}}% // MaxGas: {{maxgas}} // Available: {{availablegas}}</code>
+            <div>Profit margin: <b>+{{uplift}}%</b></div>
+            <div>MaxGas: {{maxgas}} | Available: {{availablegas}}</div>
             <div>&nbsp;</div>
-            ß
+
+            <div class="error">{{errormsg}}</div>
+            <div>&nbsp;</div>
+
             <div>Balances for current address: </div>
             <div class="address">[[address]]</div>
             <p>&nbsp;</p>
@@ -453,47 +461,6 @@
       alert('In Swarm City, this close icon would take you back');
     }
 
-    getPrice() {
-
-      return new Promise((resolve, reject) => {
-        // Load the translations.json file
-        const xobj = new XMLHttpRequest();
-        xobj.overrideMimeType('application/json');
-        // Ask sponnet api for the price:
-        // From, To and Amount, Token(ERC20) you want to send
-        // sponnet will send back the signed personalized offer
-        // I get back: price, personal offer, validity,
-        // POST: params anders meegeven
-        xobj.open('POST', this.apiendpoint + '/offer?from=' + this.address+'&tokenaddress=' + this.erc20, true);
-        xobj.onreadystatechange = () => {
-          if (xobj.readyState == 4 && xobj.status == '200') {
-            // Parse the response
-            const json = JSON.parse(xobj.responseText);
-            this.getPriceResult = json;
-            this.getPriceResult_pre = JSON.stringify(json, null, 2);
-            // this.currentprice = wei for 1 swt
-            // this.currentprice = this.getPriceResult.price;
-            //
-            // this.gasPrice = this.getPriceResult.gasprice;
-            //
-            // this.weineeded = 117000 * this.gasPrice;
-            //
-            // this.amountswtpertx = Math.ceil(this.weineeded * 1e18 / this.currentprice);
-            //
-            // //this.swtneeded = this.weineeded / this.currentprice;
-            // this.pricefor1 = this.amountswtpertx / 1e18;
-            // this.pricefor10 = this.amountswtpertx * 10 / 1e18;
-            // this.pricefor20 = this.amountswtpertx * 20 / 1e18;
-            // this.pricefor50 = this.amountswtpertx * 50 / 1e18;
-            // this.pricefor100 = this.amountswtpertx * 100 / 1e18;
-
-            this.showfill = true;
-            resolve();
-          }
-        };
-        xobj.send(null);
-      });
-    }
 
     formatbalance(b){
       if (!b || b <= 0) return 0;
@@ -645,17 +612,7 @@
 
       }
 
-      gettankbalance() {
-        var minime = this.web3.eth.contract(this.minimetoken.abi);
-        var minimeInstance = minime.at(this.erc20);
-        var self = this;
-        minimeInstance.balanceOf(this.getPriceResult.to, function(err, res) {
-          if (!err) {
-            console.log('GT balance at '+self.getPriceResult.to+'is', res.toFormat(2));
-            //self.tokenbalance = res;
-          }
-        });
-      }
+
 
       ready() {
         super.ready();
@@ -663,40 +620,69 @@
 
       makeReady() {
 
-        const myWeb3 = new Web3(web3.givenProvider);
+        const myWeb3 = new Web3(web3.currentProvider);
 
         var self = this;
 
         //this.web3 = new Web3(new Web3.providers.HttpProvider(this.ethnode));
-        //this.web3 = web3;
-        // let gasstationlib = webpack.gasstationlib({
-        //   currentProvider: myWeb3.currentProvider
-        // });
+        let gasstationlib = webpack.gasstationlib({
+          currentProvider: web3.currentProvider
+        });
 
         self.gasstationready = true;
-
         console.log(myWeb3.currentProvider.publicConfigStore._state.selectedAddress);
 
-        this.address = myWeb3.currentProvider.publicConfigStore._state.selectedAddress;
+        //this.address = myWeb3.currentProvider.publicConfigStore._state.selectedAddress;
+        //this.address = "0x709f192fbcd36cf7e7edf9bcfd11eb4493438c05";
 
-
+       this.address = "0x5263261bAD400DEf63AF145270B2bD144ec64E14";
         // get gas station info
         var xhr = new XMLHttpRequest();
         xhr.open("GET", self.apiendpoint + "/info/" + self.address + "/", true);
-        console.log("GET: ", self.apiendpoint + "/info/");
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
+          try {
+          if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
             const json = JSON.parse(xhr.response);
-            self.availablegas = json.availablegas;
-            self.maxgas = json.maxgas;
+            self.availablegas = web3.fromWei(json.availablegas, 'ether');
+            self.maxgas = web3.fromWei(json.maxgas, 'ether');
             self.uplift = json.uplift;
-            self.accountbalance = json.accountbalance;
+            self.tokenbalance = web3.fromWei(json.tokens[0].balance,'ether');
+            self.ethbalance = web3.fromWei(json.balance,'ether');
+            console.log(json);
+          }
+
+          if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 403) {
+            const json = JSON.parse(xhr.response);
+            self.availablegas = web3.fromWei(json.availablegas, 'ether');
+            self.maxgas = web3.fromWei(json.maxgas, 'ether');
+            self.uplift = json.uplift;
+            self.ethbalance = web3.fromWei(json.accountbalance,'ether');
+            self.ethbalance = parseFloat(self.ethbalance).toFixed(2);
+            console.log(json.error.code);
+            // This account is not eligible because it already has Gas.
+            switch(json.error.code) {
+              case gasstationlib.errorCodes.ACCOUNT_IS_CONTRACT:
+                self.errormsg = "This account is a contract."
+              break;
+              case gasstationlib.errorCodes.ACCOUNT_IS_NOT_EMPTY:
+                self.errormsg = "This account has a non-zero ETH balance."
+              break;
+              case gasstationlib.errorCodes.ACCOUNT_IS_NOT_UNUSED:
+                self.errormsg = "This is not a virgin account."
+              break;
+            }
+            //this.showerr = true;
+
+          }
+
+
+         } catch(e) {
+            console.log(e);
           }
         }
         xhr.send(null);
 
-        this.ethbalance = myWeb3.utils.fromWei(this.accountbalance,'ether');
 
 
         // web3.eth.getBalance(this.address, function(err, res){
@@ -788,7 +774,7 @@
 
 
         //var gsLib = require('gasstationlib');
-        var gsLib = require('gasstationlib');
+        //var gsLib = require('gasstationlib');
 
         // this.tokenamount = 1;
         // this.gasPrice = 2 * 1e9; // 2 GWei
@@ -798,85 +784,8 @@
         //this.privatekey_buffer = new ethereumjs.Buffer.Buffer(this.privatekey, "hex");
 
 
-        // Get the minime and token abi
-        var minimetokenabi;
-        var gassstationabi;
 
-        self.getPrice().then(function(){
 
-          // return new Promise((resolve, reject) => {
-          //   // Load the translations.json file
-          //   const xobj = new XMLHttpRequest();
-          //   xobj.overrideMimeType('application/json');
-          //   xobj.open('GET', self.apiendpoint + '/abi', true);
-          //   xobj.onreadystatechange = () => {
-          //     if (xobj.readyState == 4 && xobj.status == '200') {
-          //       // Parse the response
-          //       const json = JSON.parse(xobj.responseText);
-          //       console.log(json);
-          //       //return json;
-          //       self.minimetoken.abi = json.erc20;
-          //       self.gasstation.abi = json.gasstation;
-          //       var minime = self.web3.eth.contract(json.erc20);
-          //       var minimeInstance = minime.at(self.erc20);
-          //       minimeInstance.balanceOf(self.address, function(err, res) {
-          //         if (!err) {
-          //           console.log('SWT balance of client\'s account (',self.address,') is', res.toFormat(2));
-          //           var tokenshit = res / 1e18;
-          //           self.tokenbalance = tokenshit.toFixed(2);
-          //
-          //           self.web3.eth.getBalance(self.address, function(err, res) {
-          //             console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
-          //             self.ethbalance = (res/ 1e18).toFixed(2);
-          //           });
-          //           self.gasstationready = true;
-          //         }
-          //       });
-          //
-          //       resolve();
-          //     }
-          //   };
-          //   xobj.send(null);
-          // });
-
-          //  });
-
-          return new Promise((resolve, reject) => {
-            // Load the translations.json file
-            const xobj = new XMLHttpRequest();
-            xobj.overrideMimeType('application/json');
-            xobj.open('GET', self.apiendpoint + '/abi', true);
-            xobj.onreadystatechange = () => {
-              if (xobj.readyState == 4 && xobj.status == '200') {
-                // Parse the response
-                const json = JSON.parse(xobj.responseText);
-                console.log(json);
-                //return json;
-                self.minimetoken.abi = json.erc20;
-                self.gasstation.abi = json.gasstation;
-                var minime = self.web3.eth.contract(json.erc20);
-                var minimeInstance = minime.at(self.erc20);
-                minimeInstance.balanceOf(self.address, function(err, res) {
-                  if (!err) {
-                    console.log('SWT balance of client\'s account (',self.address,') is', res.toFormat(2));
-                    var tokenshit = res / 1e18;
-                    self.tokenbalance = tokenshit.toFixed(2);
-
-                    self.web3.eth.getBalance(self.address, function(err, res) {
-                      console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
-                      self.ethbalance = (res/ 1e18).toFixed(2);
-                    });
-                    self.gasstationready = true;
-                  }
-                });
-
-                resolve();
-              }
-            };
-            xobj.send(null);
-          });
-
-        });
 
         // End getting minime and token abi
 
