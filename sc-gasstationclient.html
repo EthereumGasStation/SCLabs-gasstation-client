@@ -4,7 +4,7 @@
 <script src="./utility.js"></script>
 <!-- <script src="keythereum.js"></script> -->
 <script src="../web3/dist/web3.min.js"></script>
-<script src="/webpack.min.js"></script>
+<script src="../ethereumgasstation/lib/build/gasstationlib-browser.js"></script>
 
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-pages/iron-pages.html">
@@ -667,6 +667,7 @@ class ScGasstationclient extends Polymer.Element {
 
         var self = this;
 
+<<<<<<< HEAD
         //this.web3 = new Web3(new Web3.providers.HttpProvider(this.ethnode));
         //this.web3 = web3;
         let gasstationlib = webpack.gasstationlib({
@@ -788,6 +789,9 @@ class ScGasstationclient extends Polymer.Element {
 
 
         //var gsLib = require('gasstationlib');
+=======
+        var gsLib = require('gasstationlib');
+>>>>>>> 5f7bad432486d6baedf2f6731836ac8535070f0e
 
         // this.tokenamount = 1;
         // this.gasPrice = 2 * 1e9; // 2 GWei
@@ -796,15 +800,24 @@ class ScGasstationclient extends Polymer.Element {
 
         //this.privatekey_buffer = new ethereumjs.Buffer.Buffer(this.privatekey, "hex");
 
+<<<<<<< HEAD
       //   // Get the minime and token abi
         var minimetokenabi;
         var gassstationabi;
 
         // self.getPrice().then(function(){
+=======
+        // Get the minime and token abi
+        var minimetokenabi;
+        var gassstationabi;
+
+        self.getPrice().then(function(){
+>>>>>>> 5f7bad432486d6baedf2f6731836ac8535070f0e
 
         //self.erc20 = "0xd2444365f33079be7160b7052cf544594c137e3d";
 
         // Get abis
+<<<<<<< HEAD
         // return new Promise((resolve, reject) => {
         //   // Load the translations.json file
         //   const xobj = new XMLHttpRequest();
@@ -841,6 +854,44 @@ class ScGasstationclient extends Polymer.Element {
         // });
 
     //  });
+=======
+        return new Promise((resolve, reject) => {
+          // Load the translations.json file
+          const xobj = new XMLHttpRequest();
+          xobj.overrideMimeType('application/json');
+          xobj.open('GET', self.apiendpoint + '/abi', true);
+          xobj.onreadystatechange = () => {
+            if (xobj.readyState == 4 && xobj.status == '200') {
+              // Parse the response
+              const json = JSON.parse(xobj.responseText);
+              console.log(json);
+              //return json;
+              self.minimetoken.abi = json.erc20;
+              self.gasstation.abi = json.gasstation;
+              var minime = self.web3.eth.contract(json.erc20);
+              var minimeInstance = minime.at(self.erc20);
+              minimeInstance.balanceOf(self.address, function(err, res) {
+                if (!err) {
+                  console.log('SWT balance of client\'s account (',self.address,') is', res.toFormat(2));
+                  var tokenshit = res / 1e18;
+                  self.tokenbalance = tokenshit.toFixed(2);
+
+                  self.web3.eth.getBalance(self.address, function(err, res) {
+                    console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
+                    self.ethbalance = (res/ 1e18).toFixed(2);
+                  });
+                  self.gasstationready = true;
+                }
+              });
+
+              resolve();
+            }
+          };
+          xobj.send(null);
+        });
+
+      });
+>>>>>>> 5f7bad432486d6baedf2f6731836ac8535070f0e
 
         // End getting minime and token abi
 
