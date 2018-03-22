@@ -5871,8 +5871,8 @@ if (typeof Object.create === 'function') {
   var PADDING = [6, 1536, 393216, 100663296];
   var SHIFT = [0, 8, 16, 24];
   var RC = [1, 0, 32898, 0, 32906, 2147483648, 2147516416, 2147483648, 32907, 0, 2147483649,
-            0, 2147516545, 2147483648, 32777, 2147483648, 138, 0, 136, 0, 2147516425, 0, 
-            2147483658, 0, 2147516555, 0, 139, 2147483648, 32905, 2147483648, 32771, 
+            0, 2147516545, 2147483648, 32777, 2147483648, 138, 0, 136, 0, 2147516425, 0,
+            2147483658, 0, 2147516555, 0, 139, 2147483648, 32905, 2147483648, 32771,
             2147483648, 32770, 2147483648, 128, 2147483648, 32778, 0, 2147483658, 2147483648,
             2147516545, 2147483648, 32896, 2147483648, 2147483649, 0, 2147516424, 2147483648];
 
@@ -5918,9 +5918,9 @@ if (typeof Object.create === 'function') {
     }
 
     var block, code, end = false, index = 0, start = 0, length = message.length,
-        n, i, h, l, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, 
-        b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17, 
-        b18, b19, b20, b21, b22, b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, b33, 
+        n, i, h, l, c0, c1, c2, c3, c4, c5, c6, c7, c8, c9,
+        b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15, b16, b17,
+        b18, b19, b20, b21, b22, b23, b24, b25, b26, b27, b28, b29, b30, b31, b32, b33,
         b34, b35, b36, b37, b38, b39, b40, b41, b42, b43, b44, b45, b46, b47, b48, b49;
     var blockCount = (1600 - bits * 2) / 32;
     var byteCount = blockCount * 4;
@@ -6255,7 +6255,7 @@ if (typeof Object.create === 'function') {
     }
     return hex;
   };
-  
+
   if(!root.JS_SHA3_TEST && NODE_JS) {
     module.exports = {
       sha3_512: sha3_512,
@@ -12637,64 +12637,64 @@ module.exports = (config) => {
   //   });
   // };
 
-  // utility.call = function call(web3In, contract, address, functionName, args, callback) {
-  //   function proxy(retries) {
-  //     const web3 = new Web3();
-  //     const data = contract[functionName].getData.apply(null, args);
-  //     let url =
-  //       `https://${
-  //       config.ethTestnet ? config.ethTestnet : 'api'
-  //       }.etherscan.io/api?module=proxy&action=eth_Call&to=${
-  //       address
-  //       }&data=${
-  //       data}`;
-  //     if (config.etherscanAPIKey) url += `&apikey=${config.etherscanAPIKey}`;
-  //     utility.getURL(url, (err, body) => {
-  //       if (!err) {
-  //         try {
-  //           const result = JSON.parse(body);
-  //           const functionAbi = contract.abi.find(element => element.name === functionName);
-  //           const solidityFunction = new SolidityFunction(web3.Eth, functionAbi, address);
-  //           const resultUnpacked = solidityFunction.unpackOutput(result.result);
-  //           callback(undefined, resultUnpacked);
-  //         } catch (errJson) {
-  //           if (retries > 0) {
-  //             setTimeout(() => {
-  //               proxy(retries - 1);
-  //             }, 1000);
-  //           } else {
-  //             callback(err, undefined);
-  //           }
-  //         }
-  //       } else {
-  //         callback(err, undefined);
-  //       }
-  //     });
-  //   }
-  //   try {
-  //     if (web3In.currentProvider) {
-  //       const data = contract[functionName].getData.apply(null, args);
-  //       web3In.eth.call({ to: address, data }, (err, result) => {
-  //         if (!err) {
-  //           const functionAbi = contract.abi.find(element => element.name === functionName);
-  //           const solidityFunction = new SolidityFunction(web3In.Eth, functionAbi, address);
-  //           try {
-  //             const resultUnpacked = solidityFunction.unpackOutput(result);
-  //             callback(undefined, resultUnpacked);
-  //           } catch (errJson) {
-  //             proxy(1);
-  //           }
-  //         } else {
-  //           proxy(1);
-  //         }
-  //       });
-  //     } else {
-  //       proxy(1);
-  //     }
-  //   } catch (err) {
-  //     proxy(1);
-  //   }
-  // };
+  utility.call = function call(web3In, contract, address, functionName, args, callback) {
+    function proxy(retries) {
+      const web3 = new Web3();
+      const data = contract[functionName].getData.apply(null, args);
+      let url =
+        `https://${
+        config.ethTestnet ? config.ethTestnet : 'api'
+        }.etherscan.io/api?module=proxy&action=eth_Call&to=${
+        address
+        }&data=${
+        data}`;
+      if (config.etherscanAPIKey) url += `&apikey=${config.etherscanAPIKey}`;
+      utility.getURL(url, (err, body) => {
+        if (!err) {
+          try {
+            const result = JSON.parse(body);
+            const functionAbi = contract.abi.find(element => element.name === functionName);
+            const solidityFunction = new SolidityFunction(web3.Eth, functionAbi, address);
+            const resultUnpacked = solidityFunction.unpackOutput(result.result);
+            callback(undefined, resultUnpacked);
+          } catch (errJson) {
+            if (retries > 0) {
+              setTimeout(() => {
+                proxy(retries - 1);
+              }, 1000);
+            } else {
+              callback(err, undefined);
+            }
+          }
+        } else {
+          callback(err, undefined);
+        }
+      });
+    }
+    try {
+      if (web3In.currentProvider) {
+        const data = contract[functionName].getData.apply(null, args);
+        web3In.eth.call({ to: address, data }, (err, result) => {
+          if (!err) {
+            const functionAbi = contract.abi.find(element => element.name === functionName);
+            const solidityFunction = new SolidityFunction(web3In.Eth, functionAbi, address);
+            try {
+              const resultUnpacked = solidityFunction.unpackOutput(result);
+              callback(undefined, resultUnpacked);
+            } catch (errJson) {
+              proxy(1);
+            }
+          } else {
+            proxy(1);
+          }
+        });
+      } else {
+        proxy(1);
+      }
+    } catch (err) {
+      proxy(1);
+    }
+  };
 
   // utility.testSend = function testSend(
   //   web3, contract, address, functionName, argsIn, fromAddress, privateKey, nonce, callback) {
