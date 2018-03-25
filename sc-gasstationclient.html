@@ -604,15 +604,9 @@
               }
             }
             xhr.send(JSON.stringify(res));
-
-
           });
         });
-
-
       }
-
-
 
       ready() {
         super.ready();
@@ -632,13 +626,18 @@
         self.gasstationready = true;
         console.log(myWeb3.currentProvider.publicConfigStore._state.selectedAddress);
 
-        //this.address = myWeb3.currentProvider.publicConfigStore._state.selectedAddress;
+        this.address = myWeb3.currentProvider.publicConfigStore._state.selectedAddress;
         //this.address = "0x709f192fbcd36cf7e7edf9bcfd11eb4493438c05";
 
-       this.address = "0x5263261bAD400DEf63AF145270B2bD144ec64E14";
+       //this.address = "0x5263261bAD400DEf63AF145270B2bD144ec64E14";
+
+       // myWeb3.personal.sign("0x000", this.address, function(err, res){
+       //   console.log(err, res);
+       // });
+
         // get gas station info
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", self.apiendpoint + "/info/" + self.address + "/", true);
+        xhr.open("GET", self.apiendpoint + "/info/", true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onreadystatechange = function() {
           try {
@@ -647,9 +646,13 @@
             self.availablegas = web3.fromWei(json.availablegas, 'ether');
             self.maxgas = web3.fromWei(json.maxgas, 'ether');
             self.uplift = json.uplift;
+            self.tokenaddress = json.tokens[0].address;
+
             self.tokenbalance = web3.fromWei(json.tokens[0].balance,'ether');
-            self.ethbalance = web3.fromWei(json.balance,'ether');
+            self.ethbalance = parseFloat(self.ethbalance).toFixed(2);
+            self.gasstationaddress = json.gasStationAddress;
             console.log(json);
+            self.maketx();
           }
 
           if (xhr.readyState == XMLHttpRequest.DONE && xhr.status == 403) {
@@ -659,6 +662,7 @@
             self.uplift = json.uplift;
             self.ethbalance = web3.fromWei(json.accountbalance,'ether');
             self.ethbalance = parseFloat(self.ethbalance).toFixed(2);
+            self.gasstationaddress = json.gasStationAddress;
             console.log(json.error.code);
             // This account is not eligible because it already has Gas.
             switch(json.error.code) {
@@ -683,112 +687,123 @@
         }
         xhr.send(null);
 
+      }
 
+      maketx() {
+        var self = this;
+        let gasstationlib = webpack.gasstationlib({
+          currentProvider: web3.currentProvider
+        });
+                // // SWT token address
+                 let tokenAddress = this.tokenaddress;
+                //
+                // // the gasstation (this is a dummy address)
+                let gasStationAddress = "0x5f0f9749192eee39978f14a0fef0e960cce45f50";
+                //
+                // // now query the price from the API ( TODO )
+                // // with the paremeter :
+                // // 1. I need 1000000000 gas
+                // // 2. This is the Token I want to give ( ticker : 'swarm-city')
+                // // 3. This is the address where to receive the gas (and where tokens are)
+                // // the API will return these parameters :
+                 let _tokensGive = 1 // amount of tokens i need to give
+                 let _gasOffer = 1000000000 // amount of gas you will get in return
+                 let _validUntil = 5000000 // this offer is valid until this block nr.
+                //
+                //
+                //
+                // // client signs off on these parameters
+                 let clientSig = gasstationlib.makeGastankParametersHash(
+                   tokenAddress,
+                   gasStationAddress,
+                   1,  // tokens to give
+                   _gasOffer,
+                   _validUntil);
 
-        // web3.eth.getBalance(this.address, function(err, res){
-        //   console.log('ETH balance of client\'s account (',self.address,') is', res.toString(10));
-        //   self.ethbalance = (res/ 1e18).toFixed(2);
-        // });
+                   console.log(clientSig);
+                   web3.personal.sign("0x"+clientSig, this.address, function(err, res){
+                     console.log(err, res);
+                     self.signed = res;
+                   });
 
+                 //debugger;
+
+                //
+                console.log('------Client Signature-----');
+                console.log(self.signed);
+                console.log('-----/Client Signature-----');
         //debugger;
-        //
-        // this.minime = this.resolveUrl('contracts/miniMeToken.json');
+                // console.log(this.address, tokenAddress, "0x5f0f9749192eee39978f14a0fef0e960cce45f50");
 
-        // SWT token address
-        // this.tokenAddress = "0xb9e7f8568e08d5659f5d29c4997173d84cdf2607";
+                gasstationlib.getapprovaltx(
+          this.address,
+          null,
+          this.tokenaddress,
+          1,    // approval for how many SWT units ?
+          this.gasstationaddress
+        ).then((approvalTx) => {
+          console.log('------Approval Signature-----');
+          console.log('approvalTx=', approvalTx);
+          console.log('-----/Approval Signature-----');
 
+          console.log(approvalTx.txparams);
 
+          // web3.eth.signTransaction(approvalTx.txparams, function(err, res){
+          //   console.log(err, res);
+          //  });
+          web3.eth.signTransaction({
+              from: approvalTx.txparams.from,
+              gasPrice: approvalTx.txparams.gasPrice,
+              gas: approvalTx.txparams.gasLimit,
+              to: approvalTx.txparams.to,
+              data: approvalTx.txparams.data,
+              value: 0
+          }, function(err, res){
+            console.log(err, res);
+          });
 
-        //let privateKey = '12ed1823ef1c2702b69d44aae3e4beeab8ac3b3d8668e41edbc42e871f1933b2';
+          // web3.eth.signTransaction(
+          // self.address, approvalTx, function(err, res){
+          //   console.log(err, res);
+          // });
+                //
+                //
+                //   // now you need to send off these 2 things back to the API:
+                  // let gasOrderConfirmation = {
+                  //   approval: approvalTx,
+                  //   clientsig: clientSig,
+                  // };
+                //
+                //   // POST /gasorder
+                //   // + gasOrderConfirmation
+                  // console.log('------Send this to API -----');
+                  // console.log(gasOrderConfirmation);
+                  // console.log('-----/Send this to API -----');
 
-        // example getting pubkey from private key
-        //let pubKey = gasstationlib.privateToAddress(privateKey);
-
-        //        this.address = pubKey;
-
-        //
-        //
-        // // SWT token address
-        // let tokenAddress = "0xb9e7f8568e08d5659f5d29c4997173d84cdf2607";
-        //
-        // // the gasstation (this is a dummy address)
-        // let gasStationAddress = "0xb015d1120b9c6333f6a9f38646309beb266b3943";
-        //
-        // // now query the price from the API ( TODO )
-        // // with the paremeter :
-        // // 1. I need 1000000000 gas
-        // // 2. This is the Token I want to give ( ticker : 'swarm-city')
-        // // 3. This is the address where to receive the gas (and where tokens are)
-        // // the API will return these parameters :
-        // let _tokensGive = 1 // amount of tokens i need to give
-        // let _gasOffer = 1000000000 // amount of gas you will get in return
-        // let _validUntil = 5000000 // this offer is valid until this block nr.
-        //
-        //
-        //
-        // // client signs off on these parameters
-        // let clientSig = gasstationlib.signGastankParameters(
-        //   tokenAddress,
-        //   gasStationAddress,
-        //   1,  // tokens to give
-        //   _gasOffer,
-        //   _validUntil,
-        //   privateKey);
-        //
-        // console.log('------Client Signature-----');
-        // console.log(clientSig);
-        // console.log('-----/Client Signature-----');
-        //
-        // gasstationlib.getapprovaltx(
-        //   pubKey,
-        //   privateKey,
-        //   tokenAddress,
-        //   1,    // approval for how many SWT units ?
-        //   gasStationAddress
-        // ).then((approvalTx) => {
-        //   console.log('------Approval Signature-----');
-        //   console.log('approvalTx=', approvalTx);
-        //   console.log('-----/Approval Signature-----');
-        //
-        //
-        //
-        //   // now you need to send off these 2 things back to the API:
-        //   let gasOrderConfirmation = {
-        //     approval: approvalTx,
-        //     clientsig: clientSig,
-        //   };
-        //
-        //   // POST /gasorder
-        //   // + gasOrderConfirmation
-        //   console.log('------Send this to API -----');
-        //   console.log(gasOrderConfirmation);
-        //   console.log('-----/Send this to API -----');
-        //
-        //   // and now the API will do its thing... just wait for the
-        //   // gas to appear...
-        //
-        //
-        // });
+                //   // and now the API will do its thing... just wait for the
+                //   // gas to appear...
+                //
+                //
+                 });
 
 
 
 
-        //var gsLib = require('gasstationlib');
-        //var gsLib = require('gasstationlib');
+                //var gsLib = require('gasstationlib');
+                //var gsLib = require('gasstationlib');
 
-        // this.tokenamount = 1;
-        // this.gasPrice = 2 * 1e9; // 2 GWei
+                // this.tokenamount = 1;
+                // this.gasPrice = 2 * 1e9; // 2 GWei
 
-        //this.address = ethereumjs.Util.addHexPrefix(ethereumjs.Util.privateToAddress(ethereumjs.Util.addHexPrefix(this.privatekey)).toString('hex'));
+                //this.address = ethereumjs.Util.addHexPrefix(ethereumjs.Util.privateToAddress(ethereumjs.Util.addHexPrefix(this.privatekey)).toString('hex'));
 
-        //this.privatekey_buffer = new ethereumjs.Buffer.Buffer(this.privatekey, "hex");
+                //this.privatekey_buffer = new ethereumjs.Buffer.Buffer(this.privatekey, "hex");
 
 
 
 
 
-        // End getting minime and token abi
-
+                // End getting minime and token abi
       }
     }
 

@@ -20,7 +20,7 @@
 	},
 	"homepage": "https://github.com/EthereumGasStation/SCLabs-gasstation-client#readme",
 	"dependencies": {
-		"ethereumgasstation": "0.0.2",
+		"ethereumgasstation": "0.0.8",
 		"webpack": "^4.1.1"
 	},
 	"devDependencies": {
@@ -29,7 +29,7 @@
 		"babel-loader": "^7.1.2",
 		"babel-preset-es2015": "^6.24.1",
 		"babel-preset-flow": "^6.23.0",
-		"uglify-es": "^3.3.9",
+		"uglify-es": "^3.3.10",
 		"webpack-cli": "^2.0.13"
 	}
 }
